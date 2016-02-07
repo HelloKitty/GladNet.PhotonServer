@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GladNet.PhotonServer.Common", "src\GladNet.PhotonServer.Common\GladNet.PhotonServer.Common.csproj", "{7B929B31-CA16-4D1B-A881-71054A7AF619}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D25A08BE-3DAB-4520-8539-4DA1A2B8BF6B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{EA7AA11F-D535-42B2-A9C3-955075A787B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GladNet.PhotonServer.Common.Tests", "tests\GladNet.PhotonServer.Common.Tests\GladNet.PhotonServer.Common.Tests.csproj", "{3867FBCC-0854-4C94-A326-6873BBFC2792}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B929B31-CA16-4D1B-A881-71054A7AF619}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B929B31-CA16-4D1B-A881-71054A7AF619}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B929B31-CA16-4D1B-A881-71054A7AF619}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B929B31-CA16-4D1B-A881-71054A7AF619}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3867FBCC-0854-4C94-A326-6873BBFC2792}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3867FBCC-0854-4C94-A326-6873BBFC2792}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3867FBCC-0854-4C94-A326-6873BBFC2792}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3867FBCC-0854-4C94-A326-6873BBFC2792}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7B929B31-CA16-4D1B-A881-71054A7AF619} = {D25A08BE-3DAB-4520-8539-4DA1A2B8BF6B}
+		{3867FBCC-0854-4C94-A326-6873BBFC2792} = {EA7AA11F-D535-42B2-A9C3-955075A787B4}
+	EndGlobalSection
+EndGlobal

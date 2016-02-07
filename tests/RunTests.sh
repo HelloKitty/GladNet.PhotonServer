@@ -1,0 +1,1 @@
+mono ./testrunner/NUnit.Console.3.0.1/tools/nunit3-console.exe ./GladNet.PhotonServer.Common.Tests/bin/Debug/GladNet.PhotonServer.Common.Tests.dll
