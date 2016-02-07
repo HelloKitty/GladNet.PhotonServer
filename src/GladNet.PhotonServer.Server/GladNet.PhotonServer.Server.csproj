@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7B929B31-CA16-4D1B-A881-71054A7AF619}</ProjectGuid>
+    <ProjectGuid>{4500E916-2E0E-4E7A-8E5A-86F4975C7539}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GladNet.PhotonServer.Common</RootNamespace>
-    <AssemblyName>GladNet.PhotonServer.Common</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>GladNet.PhotonServer.Server</RootNamespace>
+    <AssemblyName>GladNet.PhotonServer.Server</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ExitGamesLibs">
@@ -39,11 +42,21 @@
     <Reference Include="GladNet.Serializer">
       <HintPath>..\..\lib\Dependency Builds\GladNet\DLLs\GladNet.Serializer.dll</HintPath>
     </Reference>
+    <Reference Include="GladNet.Server.Common">
+      <HintPath>..\..\lib\Dependency Builds\GladNet\DLLs\GladNet.Server.Common.dll</HintPath>
+    </Reference>
     <Reference Include="Logging.Services">
       <HintPath>..\..\lib\Dependency Builds\LoggingServices\DLLs\Logging.Services.dll</HintPath>
     </Reference>
     <Reference Include="Net35Essentials">
       <HintPath>..\..\lib\Dependency Builds\Net35Essentials\DLLs\Net35Essentials.dll</HintPath>
+    </Reference>
+    <Reference Include="Photon.SocketServer">
+      <HintPath>..\..\lib\Static Dependencies\PhotonServer\Photon.SocketServer.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonHostRuntimeInterfaces">
+      <HintPath>..\..\lib\Static Dependencies\PhotonServer\PhotonHostRuntimeInterfaces.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,6 +66,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GladNetPeerBase.cs" />
+    <Compile Include="Message\PhotonMessageParametersAdapter.cs" />
+    <Compile Include="Message\PhotonRequestMessageAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

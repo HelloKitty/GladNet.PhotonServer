@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{EA7AA11F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GladNet.PhotonServer.Common.Tests", "tests\GladNet.PhotonServer.Common.Tests\GladNet.PhotonServer.Common.Tests.csproj", "{3867FBCC-0854-4C94-A326-6873BBFC2792}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GladNet.PhotonServer.Server", "src\GladNet.PhotonServer.Server\GladNet.PhotonServer.Server.csproj", "{4500E916-2E0E-4E7A-8E5A-86F4975C7539}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GladNet.PhotonServer.Server.Tests", "tests\GladNet.PhotonServer.Server.Tests\GladNet.PhotonServer.Server.Tests.csproj", "{C0A0874D-2B7B-49C2-A904-83F398553749}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,14 @@ Global
 		{3867FBCC-0854-4C94-A326-6873BBFC2792}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3867FBCC-0854-4C94-A326-6873BBFC2792}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3867FBCC-0854-4C94-A326-6873BBFC2792}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4500E916-2E0E-4E7A-8E5A-86F4975C7539}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4500E916-2E0E-4E7A-8E5A-86F4975C7539}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4500E916-2E0E-4E7A-8E5A-86F4975C7539}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4500E916-2E0E-4E7A-8E5A-86F4975C7539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0A0874D-2B7B-49C2-A904-83F398553749}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0A0874D-2B7B-49C2-A904-83F398553749}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0A0874D-2B7B-49C2-A904-83F398553749}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0A0874D-2B7B-49C2-A904-83F398553749}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,5 +44,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7B929B31-CA16-4D1B-A881-71054A7AF619} = {D25A08BE-3DAB-4520-8539-4DA1A2B8BF6B}
 		{3867FBCC-0854-4C94-A326-6873BBFC2792} = {EA7AA11F-D535-42B2-A9C3-955075A787B4}
+		{4500E916-2E0E-4E7A-8E5A-86F4975C7539} = {D25A08BE-3DAB-4520-8539-4DA1A2B8BF6B}
+		{C0A0874D-2B7B-49C2-A904-83F398553749} = {EA7AA11F-D535-42B2-A9C3-955075A787B4}
 	EndGlobalSection
 EndGlobal
