@@ -1,14 +1,16 @@
+call SubmoduleInit.bat < nul
+
 "%ProgramFiles(x86)%\MSBuild\14.0\Bin\msbuild.exe" .\LoggingServices/LoggingServices.sln /p:Configuration=Release /p:Platform="Any CPU"
 xcopy  /R /E /Y /q ".\LoggingServices\src\LoggingServices\bin\Release" ".\Dependency Builds\LoggingServices\DLLs\"
 
 "%ProgramFiles(x86)%\MSBuild\14.0\Bin\msbuild.exe" .\Net35Essentials/Net35Essentials.sln /p:Configuration=Release /p:Platform="Any CPU"
 xcopy  /R /E /Y /q ".\Net35Essentials\src\Net35Essentials\bin\Release" ".\Dependency Builds\Net35Essentials\DLLs\"
 
+nuget.exe restore GladNet2\GladNet2.sln
 CD .\GladNet2\Lib
 call BuildDependencies.bat < nul
 CD ..
 
-nuget.exe restore GladNetV2.sln
 "%ProgramFiles(x86)%\MSBuild\14.0\Bin\msbuild.exe" GladNetV2.sln /p:Configuration=Release /p:Platform="Any CPU"
 
 CD ..

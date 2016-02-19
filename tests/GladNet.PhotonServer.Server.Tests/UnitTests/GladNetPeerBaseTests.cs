@@ -27,7 +27,8 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 		[Test]
 		public static void Test_OnRequest_Forwards_To_Reciever()
 		{
-			//arrange
+			
+
 			Mock<INetworkMessageReceiver> reciever = new Mock<INetworkMessageReceiver>();
 			reciever.Setup(x => x.OnNetworkMessageReceive(It.IsAny<IRequestMessage>(), It.IsAny<IMessageParameters>()));
 
