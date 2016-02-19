@@ -37,7 +37,8 @@ namespace GladNet.PhotonServer.Server
 
 		protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
 		{
-			throw new NotImplementedException();
+			//Disconnects the peer
+			gladNetSessionInstance.Disconnect();
 		}
 
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)

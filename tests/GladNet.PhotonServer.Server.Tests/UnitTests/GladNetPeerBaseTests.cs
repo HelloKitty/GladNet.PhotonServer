@@ -21,7 +21,7 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 		public static void Test_Ctor_Doesnt_Throw()
 		{
 			//arrange
-			GladNetPeerBase<ClientPeerSession> peer = new GladNetPeerBase<ClientPeerSession>(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), new Mock<ClientPeerSession>(Mock.Of<ILogger>(), Mock.Of<INetworkMessageSender>(), Mock.Of<IConnectionDetails>(), Mock.Of<INetworkMessageSubscriptionService>()).Object, Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
+			GladNetPeerBase<ClientPeerSession> peer = new GladNetPeerBase<ClientPeerSession>(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), new Mock<ClientPeerSession>(Mock.Of<ILogger>(), Mock.Of<INetworkMessageSender>(), Mock.Of<IConnectionDetails>(), Mock.Of<INetworkMessageSubscriptionService>(), Mock.Of<IDisconnectionServiceHandler>()).Object, Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
 		}
 
 		[Test]
@@ -37,7 +37,7 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 			deserializer.Setup(x => x.Deserialize<PacketPayload>(It.IsAny<byte[]>()))
 				.Returns(Mock.Of<PacketPayload>());
 
-			GladNetPeerBase<ClientPeerSession> peer = new GladNetPeerBase<ClientPeerSession>(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), new Mock<ClientPeerSession>(Mock.Of<ILogger>(), Mock.Of<INetworkMessageSender>(), Mock.Of<IConnectionDetails>(), Mock.Of<INetworkMessageSubscriptionService>()).Object, reciever.Object, deserializer.Object);
+			GladNetPeerBase<ClientPeerSession> peer = new GladNetPeerBase<ClientPeerSession>(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), new Mock<ClientPeerSession>(Mock.Of<ILogger>(), Mock.Of<INetworkMessageSender>(), Mock.Of<IConnectionDetails>(), Mock.Of<INetworkMessageSubscriptionService>(), Mock.Of<IDisconnectionServiceHandler>()).Object, reciever.Object, deserializer.Object);
 
 			OperationRequest request = new OperationRequest() { Parameters = new Dictionary<byte, object>() { { 1, new byte[2] } } };
 
