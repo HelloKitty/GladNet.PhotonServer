@@ -11,34 +11,35 @@ using GladNet.Serializer;
 
 namespace GladNet.PhotonServer.Server
 {
-	public class GladNetPeerBase<TClientPeerSessionType> : PeerBase
-		where TClientPeerSessionType : ClientPeerSession
+	public class GladNetPeerBase : PeerBase
 	{
-		private readonly TClientPeerSessionType gladNetSessionInstance;
-
 		private readonly INetworkMessageReceiver networkReciever;
 
 		private readonly IDeserializerStrategy deserializer;
 
-		public GladNetPeerBase(IRpcProtocol protocol, IPhotonPeer unmanagedPeer, TClientPeerSessionType session, 
-			INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat) 
+		//A peer instance should be injected 
+		public Peer GladnetPeer { get; set; }
+
+		public GladNetPeerBase(IRpcProtocol protocol, IPhotonPeer unmanagedPeer, 
+			INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat)
 			: base(protocol, unmanagedPeer)
 		{
 			protocol.ThrowIfNull(nameof(protocol));
 			unmanagedPeer.ThrowIfNull(nameof(unmanagedPeer));
-			session.ThrowIfNull(nameof(session));
 			reciever.ThrowIfNull(nameof(reciever));
 			deserializationStrat.ThrowIfNull(nameof(deserializationStrat));
 
-			gladNetSessionInstance = session;
 			networkReciever = reciever;
 			deserializer = deserializationStrat;
 		}
 
 		protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
 		{
+			if (GladnetPeer == null)
+				throw new InvalidOperationException("The " + nameof(GladnetPeer) + " was never init.");
+
 			//Disconnects the peer
-			gladNetSessionInstance.Disconnect();
+			GladnetPeer.Disconnect();
 		}
 
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)

@@ -21,7 +21,7 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 		public static void Test_Ctor_Doesnt_Throw()
 		{
 			//arrange
-			GladNetPeerBase<ClientPeerSession> peer = new GladNetPeerBase<ClientPeerSession>(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), new Mock<ClientPeerSession>(Mock.Of<ILogger>(), Mock.Of<INetworkMessageSender>(), Mock.Of<IConnectionDetails>(), Mock.Of<INetworkMessageSubscriptionService>(), Mock.Of<IDisconnectionServiceHandler>()).Object, Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
+			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
 		}
 
 		[Test]
@@ -36,12 +36,12 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 			deserializer.Setup(x => x.Deserialize<PacketPayload>(It.IsAny<byte[]>()))
 				.Returns(Mock.Of<PacketPayload>());
 
-			GladNetPeerBase<ClientPeerSession> peer = new GladNetPeerBase<ClientPeerSession>(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), new Mock<ClientPeerSession>(Mock.Of<ILogger>(), Mock.Of<INetworkMessageSender>(), Mock.Of<IConnectionDetails>(), Mock.Of<INetworkMessageSubscriptionService>(), Mock.Of<IDisconnectionServiceHandler>()).Object, reciever.Object, deserializer.Object);
+			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), reciever.Object, deserializer.Object);
 
 			OperationRequest request = new OperationRequest() { Parameters = new Dictionary<byte, object>() { { 1, new byte[2] } } };
 
 			//assert
-			typeof(GladNetPeerBase<>).MakeGenericType(typeof(ClientPeerSession))
+			typeof(GladNetPeerBase)
 				.GetMethod("OnOperationRequest", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
 				.Invoke(peer, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic, null, new object[] { request, new SendParameters() }, null);
 
@@ -53,7 +53,9 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 		{
 			//arrange
 			Mock<IDisconnectionServiceHandler> disconnectionHandler = new Mock<IDisconnectionServiceHandler>();
-			GladNetPeerBase<ClientPeerSession> peer = new GladNetPeerBase<ClientPeerSession>(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), new Mock<ClientPeerSession>(Mock.Of<ILogger>(), Mock.Of<INetworkMessageSender>(), Mock.Of<IConnectionDetails>(), Mock.Of<INetworkMessageSubscriptionService>(), disconnectionHandler.Object).Object, Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
+			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
+
+			peer.GladnetPeer = (new Mock<ClientPeerSession>(Mock.Of<ILogger>(), Mock.Of<INetworkMessageSender>(), Mock.Of<IConnectionDetails>(), Mock.Of<INetworkMessageSubscriptionService>(), disconnectionHandler.Object)).Object;
 
 			//act
 			peer.GetType().GetMethod("OnDisconnect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
@@ -61,6 +63,29 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 
 			//assert
 			disconnectionHandler.Verify(x => x.Disconnect(), Times.Once());
+		}
+
+		[Test]
+		public static void Test_Disconnect_Throws_On_Null_Peer_When_Calls_Disconnection_Events()
+		{
+			//arrange
+			Mock<IDisconnectionServiceHandler> disconnectionHandler = new Mock<IDisconnectionServiceHandler>();
+			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
+
+			//act
+			Assert.Throws<InvalidOperationException>(() =>
+			{
+				try
+				{
+					peer.GetType().GetMethod("OnDisconnect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+						.Invoke(peer, new object[2] { DisconnectReason.ClientDisconnect, "" });
+				}
+				catch (Exception e)
+				{
+					//Throw the actual exception not the reflection exception
+					throw e.InnerException;
+				}
+			});//disconnection (and hopefully calls disconnect on the service)
 		}
 	}
 }

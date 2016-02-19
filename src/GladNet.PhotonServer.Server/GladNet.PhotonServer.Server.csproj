@@ -66,11 +66,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GladNet Services\PhotonServerNetworkMessageSenderAdapter.cs" />
+    <Compile Include="GladNetAppBase.cs" />
     <Compile Include="GladNetPeerBase.cs" />
     <Compile Include="Message\PhotonMessageParametersAdapter.cs" />
     <Compile Include="Message\PhotonRequestMessageAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
