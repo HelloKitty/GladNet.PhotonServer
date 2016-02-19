@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Photon.SocketServer;
 using GladNet.Common;
 using Logging.Services;
+using GladNet.Server.Common;
 
 namespace GladNet.PhotonServer.Server
 {
@@ -14,12 +15,11 @@ namespace GladNet.PhotonServer.Server
 		protected abstract ILogger AppLogger { get; set; }
 
 		protected override PeerBase CreatePeer(InitRequest initRequest)
-		{	
-
+		{
 			throw new NotImplementedException();
 		}
 
-		protected abstract Peer CreateGladNetPeer(INetworkMessageSender messageSender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
+		protected abstract bool ShouldIncomingPeerShouldConnect(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
 			IDisconnectionServiceHandler disconnectHandler);
 
 		protected override void Setup()

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace GladNet.PhotonServer.Server
 {
-	public class PhotonServerNetworkMessageSenderAdapter : INetworkMessageSender
+	public class PhotonServerINetworkMessageSenderAdapter : INetworkMessageSender
 	{
-		public PhotonServerNetworkMessageSenderAdapter()
+		public PhotonServerINetworkMessageSenderAdapter()
 		{
 
 		}
