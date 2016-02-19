@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace GladNet.PhotonServer.Server
 {
+	/// <summary>
+	/// Adapter for <see cref="IMessageParameters"/> interface that adapts <see cref="SendParameters"/>.
+	/// </summary>
 	public class PhotonMessageParametersAdapter : IMessageParameters
 	{
 		public byte Channel
@@ -39,6 +42,6 @@ namespace GladNet.PhotonServer.Server
 		public PhotonMessageParametersAdapter(SendParameters parameters)
 		{
 			photonParameters = parameters;
-        }
+		}
 	}
 }
