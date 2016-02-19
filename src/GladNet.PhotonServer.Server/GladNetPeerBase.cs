@@ -42,9 +42,6 @@ namespace GladNet.PhotonServer.Server
 
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
 		{
-			//Make sure it's not null. I don't think it can be though
-			operationRequest.Parameters.ThrowIfNull(nameof(operationRequest));
-
 			//Try to get the only parameter
 			//Should be the PacketPayload
 			KeyValuePair<byte, object> objectPair = operationRequest.Parameters.FirstOrDefault();
