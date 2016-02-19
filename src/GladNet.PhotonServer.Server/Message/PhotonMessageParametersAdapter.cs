@@ -39,6 +39,6 @@ namespace GladNet.PhotonServer.Server
 		public PhotonMessageParametersAdapter(SendParameters parameters)
 		{
 			photonParameters = parameters;
-        }
+		}
 	}
 }

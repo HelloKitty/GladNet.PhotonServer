@@ -33,7 +33,7 @@ namespace GladNet.PhotonServer.Server
 			gladNetSessionInstance = session;
 			networkReciever = reciever;
 			deserializer = deserializationStrat;
-        }
+		}
 
 		protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
 		{
@@ -58,6 +58,6 @@ namespace GladNet.PhotonServer.Server
 				return;
 
 			networkReciever.OnNetworkMessageReceive(new PhotonRequestMessageAdapter(payload), new PhotonMessageParametersAdapter(sendParameters)); 
-        }
+		}
 	}
 }
