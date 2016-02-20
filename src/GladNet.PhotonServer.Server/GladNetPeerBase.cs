@@ -11,33 +11,39 @@ using GladNet.Serializer;
 
 namespace GladNet.PhotonServer.Server
 {
-	public class GladNetPeerBase<TClientPeerSessionType> : PeerBase
-		where TClientPeerSessionType : ClientPeerSession
+	public class GladNetPeerBase : PeerBase
 	{
-		private readonly TClientPeerSessionType gladNetSessionInstance;
+		private INetworkMessageReceiver networkReciever { get; }
 
-		private readonly INetworkMessageReceiver networkReciever;
+		private IDeserializerStrategy deserializer { get; }
 
-		private readonly IDeserializerStrategy deserializer;
+		private IDisconnectionServiceHandler disconnectionServiceHandler;
 
-		public GladNetPeerBase(IRpcProtocol protocol, IPhotonPeer unmanagedPeer, TClientPeerSessionType session, 
-			INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat) 
+		//Used only to keep a reference to the Peer object so that GC doesn't clean it up
+		public Peer Peer { get; set; }
+
+		public GladNetPeerBase(IRpcProtocol protocol, IPhotonPeer unmanagedPeer, 
+			INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat, IDisconnectionServiceHandler disconnectionService)
 			: base(protocol, unmanagedPeer)
 		{
 			protocol.ThrowIfNull(nameof(protocol));
 			unmanagedPeer.ThrowIfNull(nameof(unmanagedPeer));
-			session.ThrowIfNull(nameof(session));
 			reciever.ThrowIfNull(nameof(reciever));
 			deserializationStrat.ThrowIfNull(nameof(deserializationStrat));
+			disconnectionService.ThrowIfNull(nameof(disconnectionService));
 
-			gladNetSessionInstance = session;
+			disconnectionServiceHandler = disconnectionService;
 			networkReciever = reciever;
 			deserializer = deserializationStrat;
 		}
 
 		protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
 		{
-			throw new NotImplementedException();
+			//Null the peer out otherwise we will leak. Trust me.
+			Peer = null;
+
+			//Disconnects the peer
+			disconnectionServiceHandler.Disconnect();
 		}
 
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
