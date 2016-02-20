@@ -1,21 +1,17 @@
-﻿using Photon.SocketServer;
+﻿using Photon.SocketServer.ServerToServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Photon.SocketServer;
 using PhotonHostRuntimeInterfaces;
-using GladNet.Server.Common;
-using GladNet.Common;
 using GladNet.Serializer;
+using GladNet.Common;
 
 namespace GladNet.PhotonServer.Server
 {
-	/// <summary>
-	/// PeerBase for GladNet2 serversides. Handles message forwarding to <see cref="Peer"/>s and other network services
-	/// as a proxy to the actual GladNet peer for Photon.
-	/// </summary>
-	public class GladNetPeerBase : PeerBase
+	public class GladNetInboundS2SPeer : InboundS2SPeer
 	{
 		/// <summary>
 		/// Reciever to push messages through.
@@ -35,12 +31,11 @@ namespace GladNet.PhotonServer.Server
 		//Used only to keep a reference to the Peer object so that GC doesn't clean it up
 		public Peer Peer { get; set; }
 
-		public GladNetPeerBase(IRpcProtocol protocol, IPhotonPeer unmanagedPeer, 
-			INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat, IDisconnectionServiceHandler disconnectionService)
-			: base(protocol, unmanagedPeer)
+		public GladNetInboundS2SPeer(InitResponse response, INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat, 
+			IDisconnectionServiceHandler disconnectionService)
+				: base(response)
 		{
-			protocol.ThrowIfNull(nameof(protocol));
-			unmanagedPeer.ThrowIfNull(nameof(unmanagedPeer));
+			response.ThrowIfNull(nameof(response));
 			reciever.ThrowIfNull(nameof(reciever));
 			deserializationStrat.ThrowIfNull(nameof(deserializationStrat));
 			disconnectionService.ThrowIfNull(nameof(disconnectionService));
@@ -64,26 +59,19 @@ namespace GladNet.PhotonServer.Server
 			disconnectionServiceHandler.Disconnect();
 		}
 
-		/// <summary>
-		/// Called when photon internally recieves an operation request.
-		/// </summary>
-		/// <param name="operationRequest">The request.</param>
-		/// <param name="sendParameters">The parameters with which the operation was sent.</param>
+		protected override void OnEvent(IEventData eventData, SendParameters sendParameters)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected override void OnOperationResponse(OperationResponse operationResponse, SendParameters sendParameters)
+		{
+			throw new NotImplementedException();
+		}
+
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
 		{
-			//Try to get the only parameter
-			//Should be the PacketPayload
-			KeyValuePair<byte, object> objectPair = operationRequest.Parameters.FirstOrDefault();
-
-			if (objectPair.Value == null)
-				return;
-
-			PacketPayload payload = deserializer.Deserialize<PacketPayload>(objectPair.Value as byte[]);
-
-			if (payload == null)
-				return;
-
-			networkReciever.OnNetworkMessageReceive(new PhotonRequestMessageAdapter(payload), new PhotonMessageParametersAdapter(sendParameters)); 
+			throw new NotImplementedException();
 		}
 	}
 }

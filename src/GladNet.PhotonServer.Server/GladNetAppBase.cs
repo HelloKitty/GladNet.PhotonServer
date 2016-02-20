@@ -8,14 +8,15 @@ using GladNet.Common;
 using Logging.Services;
 using GladNet.Server.Common;
 using GladNet.Serializer;
+using Photon.SocketServer.ServerToServer;
 
 namespace GladNet.PhotonServer.Server
 {
 	/// <summary>
 	/// GladNet2 ApplicationBase for Photon applications.
 	/// </summary>
-	public abstract class GladNetAppBase : Photon.SocketServer.ApplicationBase
-	{
+	public abstract class GladNetAppBase : ApplicationBase
+	{	
 		/// <summary>
 		/// Application logger. Root logger for the <see cref="ApplicationBase"/>.
 		/// </summary>
@@ -24,12 +25,12 @@ namespace GladNet.PhotonServer.Server
 		/// <summary>
 		/// Provider for <see cref="ISerializerStrategy"/>s.
 		/// </summary>
-		protected abstract ISerializerStrategy Serializer { get; set; }
+		public abstract ISerializerStrategy Serializer { get; set; }
 
 		/// <summary>
 		/// Provider for <see cref="IDeserializerStrategy"/>s.
 		/// </summary>
-		protected abstract IDeserializerStrategy Deserializer { get; set; }
+		public abstract IDeserializerStrategy Deserializer { get; set; }
 
 		/// <summary>
 		/// Called internally by Photon when a peer is attempting to connect.
@@ -52,7 +53,7 @@ namespace GladNet.PhotonServer.Server
 				IDisconnectionServiceHandler disconnectionHandler = new PhotonServerIDisconnectionServiceHandlerAdapter();
 
 				//Build the peer first since it's required for the network message sender
-				GladNetPeerBase peerBase = new GladNetPeerBase(initRequest.Protocol, initRequest.PhotonPeer, publisher, Deserializer, disconnectionHandler);
+				GladNetClientPeer peerBase = new GladNetClientPeer(initRequest, publisher, Deserializer, disconnectionHandler);
 				//We should make the ClientPeerSession now
 				ClientPeerSession session = CreateClientSession(new PhotonServerINetworkMessageSenderClientAdapter(peerBase, Serializer), details, publisher, disconnectionHandler);
 
@@ -78,6 +79,47 @@ namespace GladNet.PhotonServer.Server
 			}
 		}
 
+		protected override S2SPeerBase CreateServerPeer(InitResponse response, object state)
+		{
+			//Create the details so that the consumer of this class, who extends it, can indicate if this is a request we should service
+			//AKA should a peer be made
+			IConnectionDetails details = new PhotonServerIConnectionDetailsAdapter(response.RemoteIP, response.RemotePort, response.LocalPort, response.ConnectionId);
+
+			//If we should service the peer
+			if (ShouldServiceIncomingPeerConnect(details))
+			{
+				//Unlike in PhotonServer we have the expectation that they WILL be creating a peer since they said they would
+				//Because of this we'll be creating the actual PeerBase in advance.
+				NetworkMessagePublisher publisher = new NetworkMessagePublisher();
+				IDisconnectionServiceHandler disconnectionHandler = new PhotonServerIDisconnectionServiceHandlerAdapter();
+
+				//Build the peer first since it's required for the network message sender
+				GladNetInboundS2SPeer peerBase = new GladNetInboundS2SPeer(response, publisher, Deserializer, disconnectionHandler);
+				//We should make the ServerPeerSesions now
+				ServerPeerSession session = CreateServerPeerSession(new PhotonServerINetworkMessageSenderClientAdapter(peerBase, Serializer), details, publisher, disconnectionHandler);
+
+				if (session == null)
+				{
+					peerBase.Disconnect();
+
+					return null;
+				}
+
+				//This must be done to keep alive the reference of the session
+				//Otherwise GC will clean it up (WARNING: This will create circular reference and cause a leak if you do not null the peer out eventually)
+				peerBase.Peer = session;
+
+				return peerBase;
+			}
+			else
+			{
+				//Disconnect the client if they're not going to have a peer serviced
+				response.PhotonPeer.DisconnectClient();
+
+				return null;
+			}
+		}
+
 		/// <summary>
 		/// Processes incoming connection details and decides if a connection should be established.
 		/// </summary>
@@ -94,6 +136,28 @@ namespace GladNet.PhotonServer.Server
 		/// <param name="disconnectHandler">Disconnection handling service.</param>
 		/// <returns>A new client session.</returns>
 		protected abstract ClientPeerSession CreateClientSession(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
+			IDisconnectionServiceHandler disconnectHandler);
+
+		/// <summary>
+		/// Creates a server client session (outbound) for the incoming connection request.
+		/// </summary>
+		/// <param name="sender">Message sending service.</param>
+		/// <param name="details">Connection details.</param>
+		/// <param name="subService">Subscription service for networked messages.</param>
+		/// <param name="disconnectHandler">Disconnection handling service.</param>
+		/// <returns>A new client session.</returns>
+		public abstract ServerPeer CreateServerPeer(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
+			IDisconnectionServiceHandler disconnectHandler);
+
+		/// <summary>
+		/// Creates a server session (inbound) for the incoming connection request.
+		/// </summary>
+		/// <param name="sender">Message sending service.</param>
+		/// <param name="details">Connection details.</param>
+		/// <param name="subService">Subscription service for networked messages.</param>
+		/// <param name="disconnectHandler">Disconnection handling service.</param>
+		/// <returns>A new client session.</returns>
+		public abstract ServerPeerSession CreateServerPeerSession(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
 			IDisconnectionServiceHandler disconnectHandler);
 
 		/// <summary>
