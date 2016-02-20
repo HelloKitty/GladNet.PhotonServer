@@ -8,10 +8,11 @@ using Photon.SocketServer;
 using PhotonHostRuntimeInterfaces;
 using GladNet.Serializer;
 using GladNet.Common;
+using GladNet.PhotonServer.Common;
 
 namespace GladNet.PhotonServer.Server
 {
-	public class GladNetInboundS2SPeer : InboundS2SPeer
+	public class GladNetInboundS2SPeer : InboundS2SPeer, IPeerContainer
 	{
 		/// <summary>
 		/// Reciever to push messages through.
@@ -29,7 +30,7 @@ namespace GladNet.PhotonServer.Server
 		private IDisconnectionServiceHandler disconnectionServiceHandler;
 
 		//Used only to keep a reference to the Peer object so that GC doesn't clean it up
-		public Peer Peer { get; set; }
+		public GladNet.Common.Peer GladNetPeer { get; set; }
 
 		public GladNetInboundS2SPeer(InitResponse response, INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat, 
 			IDisconnectionServiceHandler disconnectionService)
@@ -53,7 +54,7 @@ namespace GladNet.PhotonServer.Server
 		protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
 		{
 			//Null the peer out otherwise we will leak. Trust me.
-			Peer = null;
+			GladNetPeer = null;
 
 			//Disconnects the peer
 			disconnectionServiceHandler.Disconnect();
@@ -61,17 +62,29 @@ namespace GladNet.PhotonServer.Server
 
 		protected override void OnEvent(IEventData eventData, SendParameters sendParameters)
 		{
-			throw new NotImplementedException();
+			//TODO: Logging, we shouldn't recieve events.
 		}
 
 		protected override void OnOperationResponse(OperationResponse operationResponse, SendParameters sendParameters)
 		{
-			throw new NotImplementedException();
+			//TODO: Logging, we shouldn't recieve responses.
 		}
 
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
 		{
-			throw new NotImplementedException();
+			//Try to get the only parameter
+			//Should be the PacketPayload
+			KeyValuePair<byte, object> objectPair = operationRequest.Parameters.FirstOrDefault();
+
+			if (objectPair.Value == null)
+				return;
+
+			PacketPayload payload = deserializer.Deserialize<PacketPayload>(objectPair.Value as byte[]);
+
+			if (payload == null)
+				return;
+
+			networkReciever.OnNetworkMessageReceive(new PhotonRequestMessageAdapter(payload), new PhotonMessageParametersAdapter(sendParameters));
 		}
 	}
 }

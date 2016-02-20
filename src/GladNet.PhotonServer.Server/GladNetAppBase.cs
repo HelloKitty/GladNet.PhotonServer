@@ -66,7 +66,7 @@ namespace GladNet.PhotonServer.Server
 				
 				//This must be done to keep alive the reference of the session
 				//Otherwise GC will clean it up (WARNING: This will create circular reference and cause a leak if you do not null the peer out eventually)
-				peerBase.Peer = session;
+				peerBase.GladNetPeer = session;
 
 				return peerBase;
 			}
@@ -107,7 +107,7 @@ namespace GladNet.PhotonServer.Server
 
 				//This must be done to keep alive the reference of the session
 				//Otherwise GC will clean it up (WARNING: This will create circular reference and cause a leak if you do not null the peer out eventually)
-				peerBase.Peer = session;
+				peerBase.GladNetPeer = session;
 
 				return peerBase;
 			}

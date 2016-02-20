@@ -8,10 +8,11 @@ using Photon.SocketServer;
 using PhotonHostRuntimeInterfaces;
 using GladNet.Serializer;
 using GladNet.Common;
+using GladNet.PhotonServer.Common;
 
 namespace GladNet.PhotonServer.Server
 {
-	public class GladNetOutboundS2SPeer : OutboundS2SPeer
+	public class GladNetOutboundS2SPeer : OutboundS2SPeer, IPeerContainer
 	{
 		/// <summary>
 		/// Reciever to push messages through.
@@ -29,7 +30,7 @@ namespace GladNet.PhotonServer.Server
 		private IDisconnectionServiceHandler disconnectionServiceHandler;
 
 		//Used only to keep a reference to the Peer object so that GC doesn't clean it up
-		public Peer Peer { get; set; }
+		public GladNet.Common.Peer GladNetPeer { get; set; }
 
 		public GladNetOutboundS2SPeer(GladNetAppBase appBase, INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat, 
 			IDisconnectionServiceHandler disconnectionService)
@@ -56,7 +57,7 @@ namespace GladNet.PhotonServer.Server
 		protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
 		{
 			//Null the peer out otherwise we will leak. Trust me.
-			Peer = null;
+			GladNetPeer = null;
 
 			//Disconnects the peer
 			disconnectionServiceHandler.Disconnect();
@@ -68,11 +69,11 @@ namespace GladNet.PhotonServer.Server
 			IConnectionDetails details = new PhotonServerIConnectionDetailsAdapter(this.RemoteIP, this.RemotePort, this.LocalPort, this.ConnectionId);
 
 			//This is a horrible way to do it but I did not expect this sort of change in Photon 4.
-			Peer = ((GladNetAppBase)GladNetAppBase.Instance).CreateServerPeer(new PhotonServerINetworkMessageSenderClientAdapter(this, ((GladNetAppBase)GladNetAppBase.Instance).Serializer),
+			GladNetPeer = ((GladNetAppBase)GladNetAppBase.Instance).CreateServerPeer(new PhotonServerINetworkMessageSenderClientAdapter(this, ((GladNetAppBase)GladNetAppBase.Instance).Serializer),
 				details, (INetworkMessageSubscriptionService)networkReciever, disconnectionServiceHandler);
 
 			//If we failed to generate a peer
-			if(Peer == null)
+			if(GladNetPeer == null)
 			{
 				this.Disconnect();
 				return;
@@ -83,22 +84,46 @@ namespace GladNet.PhotonServer.Server
 
 		protected override void OnConnectionFailed(int errorCode, string errorMessage)
 		{
-			//Do nothing I guess.
+			Disconnect();
 		}
 
 		protected override void OnEvent(IEventData eventData, SendParameters sendParameters)
 		{
-			throw new NotImplementedException();
+			//Try to get the only parameter
+			//Should be the PacketPayload
+			KeyValuePair<byte, object> objectPair = eventData.Parameters.FirstOrDefault();
+
+			if (objectPair.Value == null)
+				return;
+
+			PacketPayload payload = deserializer.Deserialize<PacketPayload>(objectPair.Value as byte[]);
+
+			if (payload == null)
+				return;
+
+			networkReciever.OnNetworkMessageReceive(new PhotonEventMessageAdapter(payload), new PhotonMessageParametersAdapter(sendParameters));
 		}
 
 		protected override void OnOperationResponse(OperationResponse operationResponse, SendParameters sendParameters)
 		{
-			throw new NotImplementedException();
+			//Try to get the only parameter
+			//Should be the PacketPayload
+			KeyValuePair<byte, object> objectPair = operationResponse.Parameters.FirstOrDefault();
+
+			if (objectPair.Value == null)
+				return;
+
+			PacketPayload payload = deserializer.Deserialize<PacketPayload>(objectPair.Value as byte[]);
+
+			if (payload == null)
+				return;
+
+			networkReciever.OnNetworkMessageReceive(new PhotonResponseMessageAdapter(payload), new PhotonMessageParametersAdapter(sendParameters));
 		}
 
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
 		{
-			throw new NotImplementedException();
+			//TODO: Logging, we shouldn't recieve requests.
 		}
 	}
 }

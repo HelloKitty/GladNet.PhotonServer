@@ -70,6 +70,8 @@
     <Compile Include="GladNet Services\PhotonServerIDisconnectionServiceHandlerAdapter.cs" />
     <Compile Include="GladNet Services\PhotonServerINetworkMessageSenderAdapter.cs" />
     <Compile Include="GladNetAppBase.cs" />
+    <Compile Include="Message\PhotonResponseMessageAdapter.cs" />
+    <Compile Include="Message\PhotonEventMessageAdapter.cs" />
     <Compile Include="Message\PhotonStatusMessageAdapter.cs" />
     <Compile Include="Peers\GladNetClientPeer.cs" />
     <Compile Include="Message\PhotonMessageParametersAdapter.cs" />

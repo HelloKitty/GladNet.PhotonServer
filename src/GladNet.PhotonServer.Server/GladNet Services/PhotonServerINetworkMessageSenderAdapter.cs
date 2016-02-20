@@ -46,30 +46,30 @@ namespace GladNet.PhotonServer.Server
 					break;
 
 				default:
-					return Common.SendResult.Invalid;
+					return GladNet.Common.SendResult.Invalid;
 			}
 
 			//Map the send result
 			switch (result)
 			{
 				case Photon.SocketServer.SendResult.Ok:
-					return Common.SendResult.Sent;
+					return GladNet.Common.SendResult.Sent;
 				case Photon.SocketServer.SendResult.Disconnected:
-					return Common.SendResult.FailedNotConnected;
+					return GladNet.Common.SendResult.FailedNotConnected;
 				case Photon.SocketServer.SendResult.SendBufferFull:
-					return Common.SendResult.Invalid;
+					return GladNet.Common.SendResult.Invalid;
 				case Photon.SocketServer.SendResult.MessageToBig:
-					return Common.SendResult.Invalid;
+					return GladNet.Common.SendResult.Invalid;
 				case Photon.SocketServer.SendResult.InvalidChannel:
-					return Common.SendResult.Invalid;
+					return GladNet.Common.SendResult.Invalid;
 				case Photon.SocketServer.SendResult.Failed:
-					return Common.SendResult.Invalid;
+					return GladNet.Common.SendResult.Invalid;
 				case Photon.SocketServer.SendResult.InvalidContentType:
-					return Common.SendResult.Invalid;
+					return GladNet.Common.SendResult.Invalid;
 				case Photon.SocketServer.SendResult.EncryptionNotSupported:
-					return Common.SendResult.Invalid;
+					return GladNet.Common.SendResult.Invalid;
 				default:
-					return Common.SendResult.Invalid;
+					return GladNet.Common.SendResult.Invalid;
 			}
 		}
 
