@@ -21,7 +21,7 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 		public static void Test_Ctor_Doesnt_Throw()
 		{
 			//arrange
-			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
+			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>(), Mock.Of<IDisconnectionServiceHandler>());
 		}
 
 		[Test]
@@ -36,7 +36,7 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 			deserializer.Setup(x => x.Deserialize<PacketPayload>(It.IsAny<byte[]>()))
 				.Returns(Mock.Of<PacketPayload>());
 
-			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), reciever.Object, deserializer.Object);
+			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), reciever.Object, deserializer.Object, Mock.Of<IDisconnectionServiceHandler>());
 
 			OperationRequest request = new OperationRequest() { Parameters = new Dictionary<byte, object>() { { 1, new byte[2] } } };
 
@@ -53,9 +53,7 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 		{
 			//arrange
 			Mock<IDisconnectionServiceHandler> disconnectionHandler = new Mock<IDisconnectionServiceHandler>();
-			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
-
-			peer.GladnetPeer = (new Mock<ClientPeerSession>(Mock.Of<ILogger>(), Mock.Of<INetworkMessageSender>(), Mock.Of<IConnectionDetails>(), Mock.Of<INetworkMessageSubscriptionService>(), disconnectionHandler.Object)).Object;
+			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>(), disconnectionHandler.Object);
 
 			//act
 			peer.GetType().GetMethod("OnDisconnect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
@@ -63,29 +61,6 @@ namespace GladNet.PhotonServer.Server.Tests.UnitTests
 
 			//assert
 			disconnectionHandler.Verify(x => x.Disconnect(), Times.Once());
-		}
-
-		[Test]
-		public static void Test_Disconnect_Throws_On_Null_Peer_When_Calls_Disconnection_Events()
-		{
-			//arrange
-			Mock<IDisconnectionServiceHandler> disconnectionHandler = new Mock<IDisconnectionServiceHandler>();
-			GladNetPeerBase peer = new GladNetPeerBase(Mock.Of<IRpcProtocol>(), Mock.Of<IPhotonPeer>(), Mock.Of<INetworkMessageReceiver>(), Mock.Of<IDeserializerStrategy>());
-
-			//act
-			Assert.Throws<InvalidOperationException>(() =>
-			{
-				try
-				{
-					peer.GetType().GetMethod("OnDisconnect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-						.Invoke(peer, new object[2] { DisconnectReason.ClientDisconnect, "" });
-				}
-				catch (Exception e)
-				{
-					//Throw the actual exception not the reflection exception
-					throw e.InnerException;
-				}
-			});//disconnection (and hopefully calls disconnect on the service)
 		}
 	}
 }

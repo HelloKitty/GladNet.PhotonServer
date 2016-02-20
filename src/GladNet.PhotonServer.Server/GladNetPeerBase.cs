@@ -13,33 +13,37 @@ namespace GladNet.PhotonServer.Server
 {
 	public class GladNetPeerBase : PeerBase
 	{
-		private readonly INetworkMessageReceiver networkReciever;
+		private INetworkMessageReceiver networkReciever { get; }
 
-		private readonly IDeserializerStrategy deserializer;
+		private IDeserializerStrategy deserializer { get; }
 
-		//A peer instance should be injected 
-		public Peer GladnetPeer { get; set; }
+		private IDisconnectionServiceHandler disconnectionServiceHandler;
+
+		//Used only to keep a reference to the Peer object so that GC doesn't clean it up
+		public Peer Peer { get; set; }
 
 		public GladNetPeerBase(IRpcProtocol protocol, IPhotonPeer unmanagedPeer, 
-			INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat)
+			INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat, IDisconnectionServiceHandler disconnectionService)
 			: base(protocol, unmanagedPeer)
 		{
 			protocol.ThrowIfNull(nameof(protocol));
 			unmanagedPeer.ThrowIfNull(nameof(unmanagedPeer));
 			reciever.ThrowIfNull(nameof(reciever));
 			deserializationStrat.ThrowIfNull(nameof(deserializationStrat));
+			disconnectionService.ThrowIfNull(nameof(disconnectionService));
 
+			disconnectionServiceHandler = disconnectionService;
 			networkReciever = reciever;
 			deserializer = deserializationStrat;
 		}
 
 		protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
 		{
-			if (GladnetPeer == null)
-				throw new InvalidOperationException("The " + nameof(GladnetPeer) + " was never init.");
+			//Null the peer out otherwise we will leak. Trust me.
+			Peer = null;
 
 			//Disconnects the peer
-			GladnetPeer.Disconnect();
+			disconnectionServiceHandler.Disconnect();
 		}
 
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
