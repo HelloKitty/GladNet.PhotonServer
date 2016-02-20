@@ -66,10 +66,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GladNet Services\PhotonServerIConnectionDetailsAdapter.cs" />
+    <Compile Include="GladNet Services\PhotonServerIDisconnectionServiceHandlerAdapter.cs" />
+    <Compile Include="GladNet Services\PhotonServerINetworkMessageSenderAdapter.cs" />
+    <Compile Include="GladNetAppBase.cs" />
     <Compile Include="GladNetPeerBase.cs" />
     <Compile Include="Message\PhotonMessageParametersAdapter.cs" />
     <Compile Include="Message\PhotonRequestMessageAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GladNet.PhotonServer.Common\GladNet.PhotonServer.Common.csproj">
+      <Project>{7b929b31-ca16-4d1b-a881-71054a7af619}</Project>
+      <Name>GladNet.PhotonServer.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
