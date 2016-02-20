@@ -11,12 +11,25 @@ using GladNet.Serializer;
 
 namespace GladNet.PhotonServer.Server
 {
+	/// <summary>
+	/// PeerBase for GladNet2 serversides. Handles message forwarding to <see cref="Peer"/>s and other network services
+	/// as a proxy to the actual GladNet peer for Photon.
+	/// </summary>
 	public class GladNetPeerBase : PeerBase
 	{
+		/// <summary>
+		/// Reciever to push messages through.
+		/// </summary>
 		private INetworkMessageReceiver networkReciever { get; }
 
+		/// <summary>
+		/// Deserialization strategy for incoming payloads.
+		/// </summary>
 		private IDeserializerStrategy deserializer { get; }
 
+		/// <summary>
+		/// Service for handling disconnections.
+		/// </summary>
 		private IDisconnectionServiceHandler disconnectionServiceHandler;
 
 		//Used only to keep a reference to the Peer object so that GC doesn't clean it up
@@ -37,6 +50,11 @@ namespace GladNet.PhotonServer.Server
 			deserializer = deserializationStrat;
 		}
 
+		/// <summary>
+		/// Called when Photon internally disconnects the peer.
+		/// </summary>
+		/// <param name="reasonCode">Reason for disconnecting.</param>
+		/// <param name="reasonDetail">Detailed reason string.</param>
 		protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
 		{
 			//Null the peer out otherwise we will leak. Trust me.
@@ -46,6 +64,11 @@ namespace GladNet.PhotonServer.Server
 			disconnectionServiceHandler.Disconnect();
 		}
 
+		/// <summary>
+		/// Called when photon internally recieves an operation request.
+		/// </summary>
+		/// <param name="operationRequest">The request.</param>
+		/// <param name="sendParameters">The parameters with which the operation was sent.</param>
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
 		{
 			//Try to get the only parameter

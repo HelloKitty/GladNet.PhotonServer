@@ -13,14 +13,14 @@ namespace GladNet.PhotonServer.Server
 	/// </summary>
 	public class PhotonMessageParametersAdapter : IMessageParameters
 	{
-		public byte Channel
-		{
-			get
-			{
-				return photonParameters.ChannelId;
-			}
-		}
+		/// <summary>
+		/// Indicates the channel of the message.
+		/// </summary>
+		public byte Channel { get { return photonParameters.ChannelId; } }
 
+		/// <summary>
+		/// Indicates the <see cref="DeliveryMethod"/> method of the message. Can/should be used to verify correct channel usage.
+		/// </summary>
 		public DeliveryMethod DeliveryMethod
 		{
 			get
@@ -29,16 +29,20 @@ namespace GladNet.PhotonServer.Server
 			}
 		}
 
-		public bool Encrypted
-		{
-			get
-			{
-				return photonParameters.Encrypted;
-			}
-		}
+		/// <summary>
+		/// Indicates if the messge is/was encrypted depending on context.
+		/// </summary>
+		public bool Encrypted { get { return photonParameters.Encrypted; } }
 
-		private readonly SendParameters photonParameters;
+		/// <summary>
+		/// Sendparameters beind adapted to <see cref="IMessageParameters"/>.
+		/// </summary>
+		private SendParameters photonParameters { get; }
 
+		/// <summary>
+		/// Creates a new adapter for the <see cref="IMessageParameters"/> interface.
+		/// </summary>
+		/// <param name="parameters">SendParameters to adapt.</param>
 		public PhotonMessageParametersAdapter(SendParameters parameters)
 		{
 			photonParameters = parameters;

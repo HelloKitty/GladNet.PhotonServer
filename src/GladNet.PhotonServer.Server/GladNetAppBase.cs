@@ -11,15 +11,32 @@ using GladNet.Serializer;
 
 namespace GladNet.PhotonServer.Server
 {
+	/// <summary>
+	/// GladNet2 ApplicationBase for Photon applications.
+	/// </summary>
 	public abstract class GladNetAppBase : Photon.SocketServer.ApplicationBase
 	{
+		/// <summary>
+		/// Application logger. Root logger for the <see cref="ApplicationBase"/>.
+		/// </summary>
 		protected abstract ILogger AppLogger { get; set; }
 
+		/// <summary>
+		/// Provider for <see cref="ISerializerStrategy"/>s.
+		/// </summary>
 		protected abstract ISerializerStrategy Serializer { get; set; }
 
+		/// <summary>
+		/// Provider for <see cref="IDeserializerStrategy"/>s.
+		/// </summary>
 		protected abstract IDeserializerStrategy Deserializer { get; set; }
 
-		//TODO: Right now there is no reference to the session so it will be cleaned up by GC. Store it somewhere.
+		/// <summary>
+		/// Called internally by Photon when a peer is attempting to connect.
+		/// Services the connection attempt.
+		/// </summary>
+		/// <param name="initRequest">Request details.</param>
+		/// <returns></returns>
 		protected override PeerBase CreatePeer(InitRequest initRequest)
 		{
 			//Create the details so that the consumer of this class, who extends it, can indicate if this is a request we should service
@@ -61,13 +78,32 @@ namespace GladNet.PhotonServer.Server
 			}
 		}
 
+		/// <summary>
+		/// Processes incoming connection details and decides if a connection should be established.
+		/// </summary>
+		/// <param name="details">Details of the connection.</param>
+		/// <returns>Indicates if, based on the details, a connection should be serviced.</returns>
 		protected abstract bool ShouldServiceIncomingPeerConnect(IConnectionDetails details);
 
+		/// <summary>
+		/// Creates a client session for the incoming connection request.
+		/// </summary>
+		/// <param name="sender">Message sending service.</param>
+		/// <param name="details">Connection details.</param>
+		/// <param name="subService">Subscription service for networked messages.</param>
+		/// <param name="disconnectHandler">Disconnection handling service.</param>
+		/// <returns>A new client session.</returns>
 		protected abstract ClientPeerSession CreateClientSession(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
 			IDisconnectionServiceHandler disconnectHandler);
 
+		/// <summary>
+		/// Called internally by Photon when the application is just about to finish startup.
+		/// </summary>
 		protected override abstract void Setup();
 
+		/// <summary>
+		/// Called internally by Photon when the application is about to be torn down.
+		/// </summary>
 		protected override abstract void TearDown();
 	}
 }

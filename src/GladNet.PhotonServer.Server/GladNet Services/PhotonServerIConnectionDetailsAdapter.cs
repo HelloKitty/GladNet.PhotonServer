@@ -8,6 +8,9 @@ using System.Net;
 
 namespace GladNet.PhotonServer.Server
 {
+	/// <summary>
+	/// Adapter for the <see cref="IConnectionDetails"/> interface.
+	/// </summary>
 	public class PhotonServerIConnectionDetailsAdapter : IConnectionDetails
 	{
 		/// <summary>
@@ -30,9 +33,16 @@ namespace GladNet.PhotonServer.Server
 		/// </summary>
 		public int ConnectionID { get; }
 
-		public PhotonServerIConnectionDetailsAdapter(string ip, int remotePort, int localPort, int connectionID)
+		/// <summary>
+		/// Creates a new adapter for the <see cref="IConnectionDetails"/> interface.
+		/// </summary>
+		/// <param name="remoteIP">Remote IP address of the connection.</param>
+		/// <param name="remotePort">Remote port of the connection.</param>
+		/// <param name="localPort">Local port of the connection.</param>
+		/// <param name="connectionID">Unique (port-wise) ID of the connection.</param>
+		public PhotonServerIConnectionDetailsAdapter(string remoteIP, int remotePort, int localPort, int connectionID)
 		{
-			RemoteIP = IPAddress.Parse(ip);
+			RemoteIP = IPAddress.Parse(remoteIP);
 			RemotePort = remotePort;
 			LocalPort = localPort;
 			ConnectionID = connectionID;
