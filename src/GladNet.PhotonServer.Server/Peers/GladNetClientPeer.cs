@@ -8,14 +8,16 @@ using PhotonHostRuntimeInterfaces;
 using GladNet.Server.Common;
 using GladNet.Common;
 using GladNet.Serializer;
+using Photon.SocketServer.Rpc;
+using GladNet.PhotonServer.Common;
 
 namespace GladNet.PhotonServer.Server
 {
 	/// <summary>
-	/// PeerBase for GladNet2 serversides. Handles message forwarding to <see cref="Peer"/>s and other network services
+	/// PeerBase for GladNet2 serversides. Handles message forwarding to <see cref="GladNetPeer"/>s and other network services
 	/// as a proxy to the actual GladNet peer for Photon.
 	/// </summary>
-	public class GladNetPeerBase : PeerBase
+	public class GladNetClientPeer : ClientPeer, IPeerContainer
 	{
 		/// <summary>
 		/// Reciever to push messages through.
@@ -33,14 +35,13 @@ namespace GladNet.PhotonServer.Server
 		private IDisconnectionServiceHandler disconnectionServiceHandler;
 
 		//Used only to keep a reference to the Peer object so that GC doesn't clean it up
-		public Peer Peer { get; set; }
+		public GladNet.Common.Peer GladNetPeer { get; set; }
 
-		public GladNetPeerBase(IRpcProtocol protocol, IPhotonPeer unmanagedPeer, 
+		public GladNetClientPeer(InitRequest request, 
 			INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat, IDisconnectionServiceHandler disconnectionService)
-			: base(protocol, unmanagedPeer)
+			: base(request)
 		{
-			protocol.ThrowIfNull(nameof(protocol));
-			unmanagedPeer.ThrowIfNull(nameof(unmanagedPeer));
+			request.ThrowIfNull(nameof(request));
 			reciever.ThrowIfNull(nameof(reciever));
 			deserializationStrat.ThrowIfNull(nameof(deserializationStrat));
 			disconnectionService.ThrowIfNull(nameof(disconnectionService));
@@ -58,7 +59,7 @@ namespace GladNet.PhotonServer.Server
 		protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
 		{
 			//Null the peer out otherwise we will leak. Trust me.
-			Peer = null;
+			GladNetPeer = null;
 
 			//Disconnects the peer
 			disconnectionServiceHandler.Disconnect();

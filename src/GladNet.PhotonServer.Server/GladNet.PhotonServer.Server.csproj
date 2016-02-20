@@ -70,9 +70,14 @@
     <Compile Include="GladNet Services\PhotonServerIDisconnectionServiceHandlerAdapter.cs" />
     <Compile Include="GladNet Services\PhotonServerINetworkMessageSenderAdapter.cs" />
     <Compile Include="GladNetAppBase.cs" />
-    <Compile Include="GladNetPeerBase.cs" />
+    <Compile Include="Message\PhotonResponseMessageAdapter.cs" />
+    <Compile Include="Message\PhotonEventMessageAdapter.cs" />
+    <Compile Include="Message\PhotonStatusMessageAdapter.cs" />
+    <Compile Include="Peers\GladNetClientPeer.cs" />
     <Compile Include="Message\PhotonMessageParametersAdapter.cs" />
     <Compile Include="Message\PhotonRequestMessageAdapter.cs" />
+    <Compile Include="Peers\GladNetInboundS2SPeer.cs" />
+    <Compile Include="Peers\GladNetOutboundS2SPeer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
