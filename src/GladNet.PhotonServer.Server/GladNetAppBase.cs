@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Photon.SocketServer;
 using GladNet.Common;
-using Logging.Services;
+using Common.Logging;
 using GladNet.Server.Common;
 using GladNet.Serializer;
 using Photon.SocketServer.ServerToServer;
@@ -20,7 +20,7 @@ namespace GladNet.PhotonServer.Server
 		/// <summary>
 		/// Application logger. Root logger for the <see cref="ApplicationBase"/>.
 		/// </summary>
-		protected abstract ILogger AppLogger { get; set; }
+		protected abstract ILog AppLogger { get; set; }
 
 		/// <summary>
 		/// Provider for <see cref="ISerializerStrategy"/>s.

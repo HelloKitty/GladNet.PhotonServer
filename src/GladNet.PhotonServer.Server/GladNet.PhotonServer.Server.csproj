@@ -33,23 +33,28 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ExitGamesLibs">
       <HintPath>..\..\lib\Static Dependencies\PhotonServer\ExitGamesLibs.dll</HintPath>
     </Reference>
-    <Reference Include="GladNet.Common">
-      <HintPath>..\..\lib\Dependency Builds\GladNet\DLLs\GladNet.Common.dll</HintPath>
+    <Reference Include="GladNet.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\GladNet.Common.1.0.1\lib\net35\GladNet.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="GladNet.Serializer">
-      <HintPath>..\..\lib\Dependency Builds\GladNet\DLLs\GladNet.Serializer.dll</HintPath>
+    <Reference Include="GladNet.Serializer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\GladNet.Serializer.1.0.1\lib\net35\GladNet.Serializer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="GladNet.Server.Common">
-      <HintPath>..\..\lib\Dependency Builds\GladNet\DLLs\GladNet.Server.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Logging.Services">
-      <HintPath>..\..\lib\Dependency Builds\LoggingServices\DLLs\Logging.Services.dll</HintPath>
-    </Reference>
-    <Reference Include="Net35Essentials">
-      <HintPath>..\..\lib\Dependency Builds\Net35Essentials\DLLs\Net35Essentials.dll</HintPath>
+    <Reference Include="GladNet.Server.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\GladNet.Server.Common.1.0.1\lib\net45\GladNet.Server.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Photon.SocketServer">
       <HintPath>..\..\lib\Static Dependencies\PhotonServer\Photon.SocketServer.dll</HintPath>
@@ -85,6 +90,9 @@
       <Project>{7b929b31-ca16-4d1b-a881-71054a7af619}</Project>
       <Name>GladNet.PhotonServer.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
