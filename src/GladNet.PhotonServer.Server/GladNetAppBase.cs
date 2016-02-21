@@ -25,12 +25,12 @@ namespace GladNet.PhotonServer.Server
 		/// <summary>
 		/// Provider for <see cref="ISerializerStrategy"/>s.
 		/// </summary>
-		public abstract ISerializerStrategy Serializer { get; set; }
+		public abstract ISerializerStrategy Serializer { get; protected set; }
 
 		/// <summary>
 		/// Provider for <see cref="IDeserializerStrategy"/>s.
 		/// </summary>
-		public abstract IDeserializerStrategy Deserializer { get; set; }
+		public abstract IDeserializerStrategy Deserializer { get; protected set; }
 
 		/// <summary>
 		/// Called internally by Photon when a peer is attempting to connect.
