@@ -9,13 +9,10 @@ install:
   - nuget restore GladNet.PhotonServer.sln
 
 before_script:
-  - chmod +x ./lib/BuildDependencies.sh
   - chmod +x ./tests/RunTests.sh
   - chmod +x ./Build.sh
 
 script:
-  - cd "$TRAVIS_BUILD_DIR/lib"
-  - ./BuildDependencies.sh
   - cd "$TRAVIS_BUILD_DIR"
   - ./Build.sh
   - cd "$TRAVIS_BUILD_DIR/tests"
