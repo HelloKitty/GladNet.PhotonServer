@@ -49,6 +49,11 @@ namespace GladNet.PhotonServer.Server
 			networkReciever.OnNetworkMessageReceive(new PhotonStatusMessageAdapter(NetStatus.Connecting), null);
 		}
 
+		protected override void OnInitializeEcryptionCompleted(short resultCode, string debugMessage)
+		{
+			base.OnInitializeEcryptionCompleted(resultCode, debugMessage);
+		}
+
 		/// <summary>
 		/// Called when Photon internally disconnects the peer.
 		/// </summary>
@@ -61,6 +66,8 @@ namespace GladNet.PhotonServer.Server
 
 			//Disconnects the peer
 			disconnectionServiceHandler.Disconnect();
+
+			networkReciever.OnNetworkMessageReceive(new PhotonStatusMessageAdapter(NetStatus.Disconnected), null);
 		}
 
 		protected override void OnConnectionEstablished(object responseObject)

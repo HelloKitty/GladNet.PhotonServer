@@ -63,6 +63,8 @@ namespace GladNet.PhotonServer.Server
 
 			//Disconnects the peer
 			disconnectionServiceHandler.Disconnect();
+
+			networkReciever.OnNetworkMessageReceive(new PhotonStatusMessageAdapter(NetStatus.Disconnected), null);
 		}
 
 		/// <summary>
