@@ -79,47 +79,6 @@ namespace GladNet.PhotonServer.Server
 			}
 		}
 
-		protected override S2SPeerBase CreateServerPeer(InitResponse response, object state)
-		{
-			//Create the details so that the consumer of this class, who extends it, can indicate if this is a request we should service
-			//AKA should a peer be made
-			IConnectionDetails details = new PhotonServerIConnectionDetailsAdapter(response.RemoteIP, response.RemotePort, response.LocalPort, response.ConnectionId);
-
-			//If we should service the peer
-			if (ShouldServiceIncomingPeerConnect(details))
-			{
-				//Unlike in PhotonServer we have the expectation that they WILL be creating a peer since they said they would
-				//Because of this we'll be creating the actual PeerBase in advance.
-				NetworkMessagePublisher publisher = new NetworkMessagePublisher();
-				IDisconnectionServiceHandler disconnectionHandler = new PhotonServerIDisconnectionServiceHandlerAdapter();
-
-				//Build the peer first since it's required for the network message sender
-				GladNetInboundS2SPeer peerBase = new GladNetInboundS2SPeer(response, publisher, Deserializer, disconnectionHandler);
-				//We should make the ServerPeerSesions now
-				ServerPeerSession session = CreateServerPeerSession(new PhotonServerINetworkMessageSenderClientAdapter(peerBase, Serializer), details, publisher, disconnectionHandler);
-
-				if (session == null)
-				{
-					peerBase.Disconnect();
-
-					return null;
-				}
-
-				//This must be done to keep alive the reference of the session
-				//Otherwise GC will clean it up (WARNING: This will create circular reference and cause a leak if you do not null the peer out eventually)
-				peerBase.GladNetPeer = session;
-
-				return peerBase;
-			}
-			else
-			{
-				//Disconnect the client if they're not going to have a peer serviced
-				response.PhotonPeer.DisconnectClient();
-
-				return null;
-			}
-		}
-
 		protected GladNetOutboundS2SPeer CreateOutBoundPeer()
 		{
 			//Services needed to have an outbound peer
