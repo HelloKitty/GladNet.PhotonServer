@@ -120,6 +120,16 @@ namespace GladNet.PhotonServer.Server
 			}
 		}
 
+		protected GladNetOutboundS2SPeer CreateOutBoundPeer()
+		{
+			//Services needed to have an outbound peer
+			NetworkMessagePublisher publisher = new NetworkMessagePublisher();
+			IDisconnectionServiceHandler disconnectionHandler = new PhotonServerIDisconnectionServiceHandlerAdapter();
+
+
+			return new GladNetOutboundS2SPeer(this, publisher, this.Deserializer, disconnectionHandler);
+		}
+
 		/// <summary>
 		/// Processes incoming connection details and decides if a connection should be established.
 		/// </summary>
