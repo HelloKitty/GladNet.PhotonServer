@@ -82,11 +82,8 @@
     <Compile Include="GladNet Services\PhotonServerINetworkMessageSenderAdapter.cs" />
     <Compile Include="GladNetAppBase.cs" />
     <Compile Include="Logging\PhotonServerLog4NetCommonLoggingILogAdapter.cs" />
-    <Compile Include="Message\PhotonResponseMessageAdapter.cs" />
-    <Compile Include="Message\PhotonEventMessageAdapter.cs" />
-    <Compile Include="Message\PhotonStatusMessageAdapter.cs" />
-    <Compile Include="Peers\GladNetClientPeer.cs" />
     <Compile Include="Message\PhotonMessageParametersAdapter.cs" />
+    <Compile Include="Peers\GladNetClientPeer.cs" />
     <Compile Include="Message\PhotonRequestMessageAdapter.cs" />
     <Compile Include="Peers\GladNetInboundS2SPeer.cs" />
     <Compile Include="Peers\GladNetOutboundS2SPeer.cs" />
