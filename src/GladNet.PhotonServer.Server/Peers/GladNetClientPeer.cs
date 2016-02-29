@@ -17,7 +17,7 @@ namespace GladNet.PhotonServer.Server
 	/// PeerBase for GladNet2 serversides. Handles message forwarding to <see cref="GladNetPeer"/>s and other network services
 	/// as a proxy to the actual GladNet peer for Photon.
 	/// </summary>
-	public class GladNetClientPeer : ClientPeer, IPeerContainer
+	public class GladNetClientPeer : Photon.SocketServer.ClientPeer, IPeerContainer
 	{
 		/// <summary>
 		/// Reciever to push messages through.

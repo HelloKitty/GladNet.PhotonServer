@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GladNet.PhotonServer.Server
+namespace GladNet.PhotonServer.Common
 {
 	/// <summary>
-	/// Adapter for the <see cref="IResponseMessage"/> interface.
+	/// Adapter for the <see cref="IEventMessage"/> interface.
 	/// </summary>
-	public class PhotonResponseMessageAdapter : IRequestMessage
+	public class PhotonEventMessageAdapter : IEventMessage
 	{
 		/// <summary>
 		/// The payload of a <see cref="INetworkMessage"/>. Can be sent accross a network.
@@ -19,10 +19,10 @@ namespace GladNet.PhotonServer.Server
 		public NetSendable<PacketPayload> Payload { get; }
 
 		/// <summary>
-		/// Creates a new adapter for the <see cref="IResponseMessage"/> interface.
+		/// Creates a new adapter for the <see cref="IEventMessage"/> interface.
 		/// </summary>
 		/// <param name="payload">Payload to adapt.</param>
-		public PhotonResponseMessageAdapter(PacketPayload payload)
+		public PhotonEventMessageAdapter(PacketPayload payload)
 		{
 			//Not great but in Production we won't use Photon.
 			Payload = new NetSendable<PacketPayload>(payload);

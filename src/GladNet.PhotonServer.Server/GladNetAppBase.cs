@@ -115,18 +115,7 @@ namespace GladNet.PhotonServer.Server
 		/// <param name="subService">Subscription service for networked messages.</param>
 		/// <param name="disconnectHandler">Disconnection handling service.</param>
 		/// <returns>A new client session.</returns>
-		public abstract ServerPeer CreateServerPeer(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
-			IDisconnectionServiceHandler disconnectHandler);
-
-		/// <summary>
-		/// Creates a server session (inbound) for the incoming connection request.
-		/// </summary>
-		/// <param name="sender">Message sending service.</param>
-		/// <param name="details">Connection details.</param>
-		/// <param name="subService">Subscription service for networked messages.</param>
-		/// <param name="disconnectHandler">Disconnection handling service.</param>
-		/// <returns>A new client session.</returns>
-		public abstract ServerPeerSession CreateServerPeerSession(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
+		public abstract GladNet.Server.Common.ClientPeer CreateServerPeer(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
 			IDisconnectionServiceHandler disconnectHandler);
 
 		/// <summary>
