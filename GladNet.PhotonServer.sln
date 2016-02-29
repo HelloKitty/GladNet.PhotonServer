@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GladNet.PhotonServer.Server
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GladNet.PhotonServer.Server.Tests", "tests\GladNet.PhotonServer.Server.Tests\GladNet.PhotonServer.Server.Tests.csproj", "{C0A0874D-2B7B-49C2-A904-83F398553749}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GladNet.PhotonServer.Client", "src\GladNet.PhotonServer.Client\GladNet.PhotonServer.Client.csproj", "{D2602CC4-3C32-47C0-8420-8D74ADC10BFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{C0A0874D-2B7B-49C2-A904-83F398553749}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0A0874D-2B7B-49C2-A904-83F398553749}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0A0874D-2B7B-49C2-A904-83F398553749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2602CC4-3C32-47C0-8420-8D74ADC10BFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2602CC4-3C32-47C0-8420-8D74ADC10BFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2602CC4-3C32-47C0-8420-8D74ADC10BFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2602CC4-3C32-47C0-8420-8D74ADC10BFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,5 +52,6 @@ Global
 		{3867FBCC-0854-4C94-A326-6873BBFC2792} = {EA7AA11F-D535-42B2-A9C3-955075A787B4}
 		{4500E916-2E0E-4E7A-8E5A-86F4975C7539} = {D25A08BE-3DAB-4520-8539-4DA1A2B8BF6B}
 		{C0A0874D-2B7B-49C2-A904-83F398553749} = {EA7AA11F-D535-42B2-A9C3-955075A787B4}
+		{D2602CC4-3C32-47C0-8420-8D74ADC10BFC} = {D25A08BE-3DAB-4520-8539-4DA1A2B8BF6B}
 	EndGlobalSection
 EndGlobal

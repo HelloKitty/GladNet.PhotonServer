@@ -47,16 +47,16 @@
     <Reference Include="ExitGamesLibs">
       <HintPath>..\..\lib\Static Dependencies\PhotonServer\ExitGamesLibs.dll</HintPath>
     </Reference>
-    <Reference Include="GladNet.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GladNet.Common.1.0.1\lib\net35\GladNet.Common.dll</HintPath>
+    <Reference Include="GladNet.Common, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\GladNet.Common.1.0.2\lib\net35\GladNet.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="GladNet.Serializer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GladNet.Serializer.1.0.1\lib\net35\GladNet.Serializer.dll</HintPath>
+    <Reference Include="GladNet.Serializer, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\GladNet.Serializer.1.0.2\lib\net35\GladNet.Serializer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="GladNet.Server.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GladNet.Server.Common.1.0.1\lib\net45\GladNet.Server.Common.dll</HintPath>
+    <Reference Include="GladNet.Server.Common, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\GladNet.Server.Common.1.0.2\lib\net45\GladNet.Server.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net">
@@ -77,7 +77,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GladNet Services\PhotonServerIConnectionDetailsAdapter.cs" />
     <Compile Include="GladNet Services\PhotonServerIDisconnectionServiceHandlerAdapter.cs" />
     <Compile Include="GladNet Services\PhotonServerINetworkMessageSenderAdapter.cs" />
     <Compile Include="GladNetAppBase.cs" />
@@ -96,7 +95,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
