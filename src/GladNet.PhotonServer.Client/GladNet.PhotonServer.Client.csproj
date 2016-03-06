@@ -39,12 +39,12 @@
       <HintPath>..\..\packages\Common.Logging.Core.3.3.1\lib\net35\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="GladNet.Common, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GladNet.Common.1.0.2\lib\net35\GladNet.Common.dll</HintPath>
+    <Reference Include="GladNet.Common, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\GladNet.Common.1.0.3\lib\net35\GladNet.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="GladNet.Serializer, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GladNet.Serializer.1.0.2\lib\net35\GladNet.Serializer.dll</HintPath>
+    <Reference Include="GladNet.Serializer, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\GladNet.Serializer.1.0.3\lib\net35\GladNet.Serializer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Photon3Unity3D">
@@ -68,7 +68,6 @@
     <Compile Include="GladNetPhotonPeer.cs" />
     <Compile Include="IClientNetworkMessageReciever.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnityClientPeer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,6 +1,5 @@
 ﻿using ExitGames.Client.Photon;
 using GladNet.Common;
-using GladNet.Server.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
