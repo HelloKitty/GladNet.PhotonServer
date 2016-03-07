@@ -1,5 +1,6 @@
 ﻿using ExitGames.Client.Photon;
 using GladNet.Common;
+using GladNet.PhotonServer.Server;
 using GladNet.Serializer;
 using System;
 using System.Collections;
@@ -55,10 +56,15 @@ namespace GladNet.PhotonServer.Client
 
 		void IPhotonPeerListener.OnEvent(EventData eventData)
 		{
+			Debug.Log("Recieved event");
+
 			PacketPayload payload = StripPayload(eventData.Parameters);
 
 			if (payload == null)
+			{
+				Debug.LogWarning("Event was empty");
 				return;
+			}	
 
 			this.OnReceiveEvent(payload);
 		}
@@ -85,7 +91,7 @@ namespace GladNet.PhotonServer.Client
 		{
 			//Try to get the only parameter
 			//Should be the PacketPayload
-			KeyValuePair<byte, object> objectPair = parameters.FirstOrDefault();
+			KeyValuePair<byte, object> objectPair = parameters.FirstOrDefault(x => x.Value != null);
 
 			if (objectPair.Value == null)
 				return null;
@@ -117,5 +123,10 @@ namespace GladNet.PhotonServer.Client
 		public abstract void OnReceiveResponse(PacketPayload payload);
 		public abstract void OnReceiveEvent(PacketPayload payload);
 		public abstract void OnStatusChanged(NetStatus status);
+
+		public bool CanSend(OperationType opType)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -76,7 +76,7 @@ namespace GladNet.PhotonServer.Server
 		private Photon.SocketServer.SendResult SendEvent(PacketPayload payload, bool unreliable, bool encrypt, byte channel)
 		{
 			//Builds the message in a context that Photon understands (dictionary of objects)
-			EventData data = new EventData(1, new Dictionary<object, byte>(1) { { SerializePayload(payload), 0 } });
+			EventData data = new EventData(1, new Dictionary<byte, object>(1) { { 0, SerializePayload(payload) } });
 
 			//Sends the event through Photon's transport layer.
 			return photonPeer.SendEvent(data, new SendParameters() { ChannelId = channel, Encrypted = encrypt, Unreliable = unreliable });
@@ -85,7 +85,7 @@ namespace GladNet.PhotonServer.Server
 		private Photon.SocketServer.SendResult SendResponse(PacketPayload payload, bool unreliable, bool encrypt, byte channel)
 		{
 			//Builds the message in a context that Photon understands (dictionary of objects)
-			OperationResponse data = new OperationResponse(1, new Dictionary<object, byte>(1) { { SerializePayload(payload), 0 } });
+			OperationResponse data = new OperationResponse(1, new Dictionary<byte, object>(1) { { 0, SerializePayload(payload) } });
 
 			//Sends the event through Photon's transport layer.
 			return photonPeer.SendOperationResponse(data, new SendParameters() { ChannelId = channel, Encrypted = encrypt, Unreliable = unreliable });
