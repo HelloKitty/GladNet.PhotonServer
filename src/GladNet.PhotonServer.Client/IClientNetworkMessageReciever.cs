@@ -6,6 +6,10 @@ using System.Text;
 
 namespace GladNet.PhotonServer.Client
 {
+	//We only really expose this stuff publicaly for: simulation and unit testing purposes.
+	/// <summary>
+	/// Contract for payload and message recieveing semantics.
+	/// </summary>
 	public interface IClientNetworkMessageReciever
 	{
 		/// <summary>
