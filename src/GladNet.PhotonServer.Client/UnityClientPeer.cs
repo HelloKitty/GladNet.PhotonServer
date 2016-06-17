@@ -19,7 +19,7 @@ namespace GladNet.PhotonServer.Client
 	/// <typeparam name="TSerializationStrategy"></typeparam>
 	/// <typeparam name="TDeserializationStrategy"></typeparam>
 	/// <typeparam name="TSerializerRegistry"></typeparam>
-	public abstract class UnityClientPeer<TSerializationStrategy, TDeserializationStrategy, TSerializerRegistry> : MonoBehaviour, IPhotonPeerListener, IClientPeerNetworkMessageSender, IClientNetworkMessageReciever
+	public abstract class UnityClientPeer<TSerializationStrategy, TDeserializationStrategy, TSerializerRegistry> : MonoBehaviour, IPhotonPeerListener, IClientPeerNetworkMessageSender, IClientNetworkMessageReciever, INetPeer
 		where TSerializationStrategy : ISerializerStrategy, new() where TDeserializationStrategy : IDeserializerStrategy, new() where TSerializerRegistry : ISerializerRegistry, new()
 	{
 		//Contraining new() for generic type params in .Net 3.5 is very slow
@@ -50,6 +50,23 @@ namespace GladNet.PhotonServer.Client
 		/// </summary>
 		private PhotonPeer peer { get; set; }
 
+		/// <summary>
+		/// Indicates the current status of the network peer.
+		/// </summary>
+		public NetStatus Status { get; private set; } = NetStatus.Disconnected; //default should be disconnected.
+
+		/// <summary>
+		/// Exposes information about the Peer's connection.
+		/// Null if no connection was attempted.
+		/// </summary>
+		public IConnectionDetails PeerDetails { get; private set; }
+
+		/// <summary>
+		/// Service provides network message sending.
+		/// Service will be null and unavailable until a connection attempt.
+		/// </summary>
+		public INetworkMessageSender NetworkSendService { get; private set; }
+
 		void IPhotonPeerListener.DebugReturn(DebugLevel level, string message)
 		{
 			//Do nothing
@@ -64,7 +81,6 @@ namespace GladNet.PhotonServer.Client
 		/// <returns></returns>
 		public bool Connect(string serverAddress, string appName)
 		{
-
 			//We simply create a new PhotonPeer which would generally be created by users
 			//who normally use Photon but we store it and provide the GladNet API on top of it through this class.
 			peer = new PhotonPeer(this, ConnectionProtocol.Udp);
@@ -72,6 +88,10 @@ namespace GladNet.PhotonServer.Client
 			//This indicates if it's a valid connection attempt, not if we're actually connected.
 			//Connection is NOT established after this line. It's no syncronous.
 			bool isConnecting = peer.Connect(serverAddress, appName);
+
+			//We can't really give accurate data. Photon doesn't expose it.
+			PeerDetails = new PhotonServerIConnectionDetailsAdapter(serverAddress.Split(':').First(), Int32.Parse(serverAddress.Split(':').Last()), -1, 0);
+			NetworkSendService = new UnityClientPeerNetworkMessageSenderAdapter(this);
 
 			if (!isConnecting)
 				return isConnecting;
@@ -144,7 +164,12 @@ namespace GladNet.PhotonServer.Client
 			NetStatus? status = statusCode.ToGladNet();
 
 			if (status.HasValue)
+			{
+				//We should set the INetPeer status with the new status
+				Status = status.Value;
+
 				this.OnStatusChanged(status.Value);
+			}
 		}
 
 		private PacketPayload StripPayload(Dictionary<byte, object> parameters)
@@ -213,5 +238,11 @@ namespace GladNet.PhotonServer.Client
 		/// </summary>
 		/// <param name="status">Current status.</param>
 		public abstract void OnStatusChanged(NetStatus status);
+
+		public bool CanSend(OperationType opType)
+		{
+			//Clients can only send requests.
+			return opType == OperationType.Request;
+		}
 	}
 }
