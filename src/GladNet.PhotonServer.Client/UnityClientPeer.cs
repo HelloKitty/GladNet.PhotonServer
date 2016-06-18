@@ -105,6 +105,15 @@ namespace GladNet.PhotonServer.Client
 			return true;
 		}
 
+		/// <summary>
+		/// Attempts to establish a secure channel with which to communicate with the
+		/// remote-host with.
+		/// </summary>
+		public void EstablishEncryption()
+		{
+			peer.EstablishEncryption();
+		}
+
 		private bool isPollRunning = false;
 		private readonly WaitForSeconds waitTime = new WaitForSeconds(0.1f); //TODO: Expose this to the user.
 		private IEnumerator Poll()
@@ -134,7 +143,7 @@ namespace GladNet.PhotonServer.Client
 			{
 				Debug.LogWarning("Event was empty");
 				return;
-			}	
+			}
 
 			this.OnReceiveEvent(payload);
 		}
