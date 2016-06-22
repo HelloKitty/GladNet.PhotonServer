@@ -206,7 +206,8 @@ namespace GladNet.PhotonServer.Client
 		{
 			byte[] payloadBytes = serializer.Serialize(payload);
 
-			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, payloadBytes } }, deliveryMethod.isReliable(), channel) ? SendResult.Sent : SendResult.Invalid;
+			//WARNING: Make sure to send encrypted parameter. There was a fault where we didn't. We cannot unit test it as it's within a MonoBehaviour
+			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, payloadBytes } }, deliveryMethod.isReliable(), channel, encrypt) ? SendResult.Sent : SendResult.Invalid;
 		}
 
 		/// <summary>
@@ -221,7 +222,8 @@ namespace GladNet.PhotonServer.Client
 		{
 			byte[] payloadBytes = serializer.Serialize(payload);
 
-			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, payloadBytes } }, payload.DeliveryMethod.isReliable(), payload.Channel) ? SendResult.Sent : SendResult.Invalid;
+			//WARNING: Make sure to send encrypted parameter. There was a fault where we didn't. We cannot unit test it as it's within a MonoBehaviour
+			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, payloadBytes } }, payload.DeliveryMethod.isReliable(), payload.Channel, payload.Encrypted) ? SendResult.Sent : SendResult.Invalid;
 		}
 
 		protected virtual void OnApplicationQuit()
