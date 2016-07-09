@@ -88,6 +88,7 @@
     <Compile Include="Extensions\DeliveryMethodExtensions.cs" />
     <Compile Include="GladNet Services\PhotonServerIConnectionDetailsAdapter.cs" />
     <Compile Include="IPeerContainer.cs" />
+    <Compile Include="Message\PhotonStatusMessageAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

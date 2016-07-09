@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using Photon.SocketServer;
 using GladNet.Common;
 using Common.Logging;
-using GladNet.Server.Common;
 using GladNet.Serializer;
 using Photon.SocketServer.ServerToServer;
+using GladNet.Engine.Common;
+using GladNet.Engine.Server;
 
 namespace GladNet.PhotonServer.Server
 {
@@ -104,7 +105,7 @@ namespace GladNet.PhotonServer.Server
 		/// <param name="subService">Subscription service for networked messages.</param>
 		/// <param name="disconnectHandler">Disconnection handling service.</param>
 		/// <returns>A new client session.</returns>
-		protected abstract ClientPeerSession CreateClientSession(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
+		protected abstract ClientPeerSession CreateClientSession(INetworkMessageRouterService sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
 			IDisconnectionServiceHandler disconnectHandler);
 
 		/// <summary>
@@ -115,7 +116,7 @@ namespace GladNet.PhotonServer.Server
 		/// <param name="subService">Subscription service for networked messages.</param>
 		/// <param name="disconnectHandler">Disconnection handling service.</param>
 		/// <returns>A new client session.</returns>
-		public abstract GladNet.Common.ClientPeer CreateServerPeer(INetworkMessageSender sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
+		public abstract GladNet.Engine.Common.ClientPeer CreateServerPeer(INetworkMessageRouterService sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
 			IDisconnectionServiceHandler disconnectHandler);
 
 		/// <summary>

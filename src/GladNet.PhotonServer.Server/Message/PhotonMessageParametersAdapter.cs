@@ -1,4 +1,5 @@
 ﻿using GladNet.Common;
+using GladNet.Message;
 using Photon.SocketServer;
 using System;
 using System.Collections.Generic;
