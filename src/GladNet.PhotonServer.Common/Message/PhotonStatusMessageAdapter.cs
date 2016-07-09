@@ -1,8 +1,11 @@
 ﻿using GladNet.Common;
+using GladNet.Message;
+using GladNet.Payload;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GladNet.Serializer;
 
 namespace GladNet.PhotonServer.Common
 {
@@ -14,7 +17,7 @@ namespace GladNet.PhotonServer.Common
 		/// <summary>
 		/// Null/Unused payload in Photon. Always null.
 		/// </summary>
-		NetSendable<PacketPayload> INetworkMessage.Payload { get; } = null;
+		NetSendable<PacketPayload> IPayloadContainer.Payload { get; } = null;
 
 		/// <summary>
 		/// The <see cref="NetStatus"/> value.
@@ -28,6 +31,11 @@ namespace GladNet.PhotonServer.Common
 		public PhotonStatusMessageAdapter(NetStatus status)
 		{
 			Status = status;
+		}
+
+		public byte[] SerializeWithVisitor(ISerializerStrategy serializer)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

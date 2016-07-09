@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
+using GladNet.Engine.Common;
 
 namespace GladNet.PhotonServer.Server
 {
@@ -28,7 +29,7 @@ namespace GladNet.PhotonServer.Server
 		public int LocalPort { get; }
 
 		/// <summary>
-		/// Connection ID of the peer. (unique per port)
+		/// AUID of the peer. (Application-wide unique)
 		/// </summary>
 		public int ConnectionID { get; }
 

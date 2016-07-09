@@ -1,5 +1,6 @@
 ﻿using ExitGames.Client.Photon;
 using GladNet.Common;
+using GladNet.Engine.Common;
 using GladNet.PhotonServer.Server;
 using GladNet.Serializer;
 using System;
@@ -9,6 +10,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using GladNet.Message;
+using GladNet.Payload;
 
 namespace GladNet.PhotonServer.Client
 {
@@ -19,7 +22,7 @@ namespace GladNet.PhotonServer.Client
 	/// <typeparam name="TSerializationStrategy"></typeparam>
 	/// <typeparam name="TDeserializationStrategy"></typeparam>
 	/// <typeparam name="TSerializerRegistry"></typeparam>
-	public abstract class UnityClientPeer<TSerializationStrategy, TDeserializationStrategy, TSerializerRegistry> : MonoBehaviour, IPhotonPeerListener, IClientPeerNetworkMessageSender, IClientNetworkMessageReciever, INetPeer
+	public abstract class UnityClientPeer<TSerializationStrategy, TDeserializationStrategy, TSerializerRegistry> : MonoBehaviour, IPhotonPeerListener, IClientPeerNetworkMessageRouter, IClientPeerPayloadSender, IClientNetworkMessageReciever, INetPeer
 		where TSerializationStrategy : ISerializerStrategy, new() where TDeserializationStrategy : IDeserializerStrategy, new() where TSerializerRegistry : ISerializerRegistry, new()
 	{
 		//Contraining new() for generic type params in .Net 3.5 is very slow
@@ -62,10 +65,10 @@ namespace GladNet.PhotonServer.Client
 		public IConnectionDetails PeerDetails { get; private set; }
 
 		/// <summary>
-		/// Service provides network message sending.
+		/// Service provides network message routing and sending
 		/// Service will be null and unavailable until a connection attempt.
 		/// </summary>
-		public INetworkMessageSender NetworkSendService { get; private set; }
+		public INetworkMessageRouterService NetworkSendService { get; private set; }
 
 		void IPhotonPeerListener.DebugReturn(DebugLevel level, string message)
 		{
@@ -81,6 +84,10 @@ namespace GladNet.PhotonServer.Client
 		/// <returns></returns>
 		public bool Connect(string serverAddress, string appName)
 		{
+			//We need to register the payload types before we can even send
+			//anything. Otherwise we can't serialize.
+			RegisterPayloadTypes(this.serializerRegiter);
+
 			//We simply create a new PhotonPeer which would generally be created by users
 			//who normally use Photon but we store it and provide the GladNet API on top of it through this class.
 			peer = new PhotonPeer(this, ConnectionProtocol.Udp);
@@ -91,7 +98,7 @@ namespace GladNet.PhotonServer.Client
 
 			//We can't really give accurate data. Photon doesn't expose it.
 			PeerDetails = new PhotonServerIConnectionDetailsAdapter(serverAddress.Split(':').First(), Int32.Parse(serverAddress.Split(':').Last()), -1, 0);
-			NetworkSendService = new UnityClientPeerNetworkMessageSenderAdapter(this);
+			NetworkSendService = new UnityClientPeerNetworkMessageSenderAdapter<UnityClientPeer<TSerializationStrategy, TDeserializationStrategy, TSerializerRegistry>>(this);
 
 			if (!isConnecting)
 				return isConnecting;
@@ -137,15 +144,16 @@ namespace GladNet.PhotonServer.Client
 		{
 			Debug.Log("Recieved event");
 
-			PacketPayload payload = StripPayload(eventData.Parameters);
+			EventMessage message = StripMessage(eventData);
 
-			if (payload == null)
+			if (message == null)
 			{
 				Debug.LogWarning("Event was empty");
 				return;
 			}
 
-			this.OnReceiveEvent(payload);
+			//PhotonServer does not provide information about recieved messages.
+			this.OnReceiveEvent(message, null);
 		}
 
 		/// <summary>
@@ -155,12 +163,13 @@ namespace GladNet.PhotonServer.Client
 		/// <param name="eventData">Internal PhotonServer response data.</param>
 		void IPhotonPeerListener.OnOperationResponse(OperationResponse operationResponse)
 		{
-			PacketPayload payload = StripPayload(operationResponse.Parameters);
+			ResponseMessage message = StripMessage(operationResponse);
 
-			if (payload == null)
+			if (message == null)
 				return;
 
-			this.OnReceiveResponse(payload);
+			//PhotonServer does not provide information about recieved messages.
+			this.OnReceiveResponse(message, null);
 		}
 
 		/// <summary>
@@ -181,16 +190,28 @@ namespace GladNet.PhotonServer.Client
 			}
 		}
 
-		private PacketPayload StripPayload(Dictionary<byte, object> parameters)
+		private EventMessage StripMessage(EventData data)
 		{
 			//Try to get the only parameter
-			//Should be the PacketPayload
-			KeyValuePair<byte, object> objectPair = parameters.FirstOrDefault(x => x.Value != null);
+			//Should be the Message
+			KeyValuePair<byte, object> objectPair = data.Parameters.FirstOrDefault(x => x.Value != null);
 
 			if (objectPair.Value == null)
 				return null;
 
-			return deserializer.Deserialize<PacketPayload>(objectPair.Value as byte[]);
+			return deserializer.Deserialize<EventMessage>(objectPair.Value as byte[]);
+		}
+
+		private ResponseMessage StripMessage(OperationResponse data)
+		{
+			//Try to get the only parameter
+			//Should be the Message
+			KeyValuePair<byte, object> objectPair = data.Parameters.FirstOrDefault(x => x.Value != null);
+
+			if (objectPair.Value == null)
+				return null;
+
+			return deserializer.Deserialize<ResponseMessage>(objectPair.Value as byte[]);
 		}
 
 		/// <summary>
@@ -236,13 +257,15 @@ namespace GladNet.PhotonServer.Client
 		/// Handles a <see cref="PacketPayload"/> sent as a response.
 		/// </summary>
 		/// <param name="payload">Response payload data from the network.</param>
-		public abstract void OnReceiveResponse(PacketPayload payload);
+		public abstract void OnReceiveResponse(IResponseMessage message, IMessageParameters parameters);
 
 		/// <summary>
 		/// Handles a <see cref="PacketPayload"/> sent as an event.
 		/// </summary>
 		/// <param name="payload">Event payload data from the network.</param>
-		public abstract void OnReceiveEvent(PacketPayload payload);
+		public abstract void OnReceiveEvent(IEventMessage message, IMessageParameters parameters);
+
+		public abstract void RegisterPayloadTypes(ISerializerRegistry registry);
 
 		/// <summary>
 		/// Handles a changed <see cref="NetStatus"/> stat from either local events or network events.
@@ -254,6 +277,11 @@ namespace GladNet.PhotonServer.Client
 		{
 			//Clients can only send requests.
 			return opType == OperationType.Request;
+		}
+
+		public SendResult RouteRequest(IRequestMessage message, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

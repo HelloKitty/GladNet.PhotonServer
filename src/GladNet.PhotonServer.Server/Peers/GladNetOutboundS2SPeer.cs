@@ -9,6 +9,10 @@ using PhotonHostRuntimeInterfaces;
 using GladNet.Serializer;
 using GladNet.Common;
 using GladNet.PhotonServer.Common;
+using Easyception;
+using GladNet.Engine.Common;
+using GladNet.Message;
+using GladNet.Payload;
 
 namespace GladNet.PhotonServer.Server
 {
@@ -30,16 +34,16 @@ namespace GladNet.PhotonServer.Server
 		private IDisconnectionServiceHandler disconnectionServiceHandler;
 
 		//Used only to keep a reference to the Peer object so that GC doesn't clean it up
-		public GladNet.Common.Peer GladNetPeer { get; set; }
+		public GladNet.Engine.Common.Peer GladNetPeer { get; set; }
 
 		public GladNetOutboundS2SPeer(GladNetAppBase appBase, INetworkMessageReceiver reciever, IDeserializerStrategy deserializationStrat, 
 			IDisconnectionServiceHandler disconnectionService)
 				: base(appBase)
 		{
-			appBase.ThrowIfNull(nameof(appBase));
-			reciever.ThrowIfNull(nameof(reciever));
-			deserializationStrat.ThrowIfNull(nameof(deserializationStrat));
-			disconnectionService.ThrowIfNull(nameof(disconnectionService));
+			Throw<ArgumentNullException>.If.IsNull(appBase)?.Now(nameof(appBase));
+			Throw<ArgumentNullException>.If.IsNull(reciever)?.Now(nameof(reciever));
+			Throw<ArgumentNullException>.If.IsNull(deserializationStrat)?.Now(nameof(deserializationStrat));
+			Throw<ArgumentNullException>.If.IsNull(disconnectionService)?.Now(nameof(disconnectionService));
 
 			disconnectionServiceHandler = disconnectionService;
 			networkReciever = reciever;
@@ -97,35 +101,35 @@ namespace GladNet.PhotonServer.Server
 		protected override void OnEvent(IEventData eventData, SendParameters sendParameters)
 		{
 			//Try to get the only parameter
-			//Should be the PacketPayload
+			//Should be the RequestMessage
 			KeyValuePair<byte, object> objectPair = eventData.Parameters.FirstOrDefault();
 
-			if (objectPair.Value == null)
-				return;
+			//TODO: Easyception should offer Now() ctors
+			Throw<InvalidOperationException>.If.IsTrue(objectPair.Value == null)?.Now();
 
-			PacketPayload payload = deserializer.Deserialize<PacketPayload>(objectPair.Value as byte[]);
+			EventMessage message = deserializer.Deserialize<EventMessage>(objectPair.Value as byte[]);
 
-			if (payload == null)
-				return;
+			//TODO: Easyception should offer Now() ctors
+			Throw<InvalidOperationException>.If.IsTrue(message == null)?.Now();
 
-			networkReciever.OnNetworkMessageReceive(new PhotonEventMessageAdapter(payload), new PhotonMessageParametersAdapter(sendParameters));
+			networkReciever.OnNetworkMessageReceive(message, new PhotonMessageParametersAdapter(sendParameters));
 		}
 
 		protected override void OnOperationResponse(OperationResponse operationResponse, SendParameters sendParameters)
 		{
 			//Try to get the only parameter
-			//Should be the PacketPayload
+			//Should be the RequestMessage
 			KeyValuePair<byte, object> objectPair = operationResponse.Parameters.FirstOrDefault();
 
-			if (objectPair.Value == null)
-				return;
+			//TODO: Easyception should offer Now() ctors
+			Throw<InvalidOperationException>.If.IsTrue(objectPair.Value == null)?.Now();
 
-			PacketPayload payload = deserializer.Deserialize<PacketPayload>(objectPair.Value as byte[]);
+			ResponseMessage message = deserializer.Deserialize<ResponseMessage>(objectPair.Value as byte[]);
 
-			if (payload == null)
-				return;
+			//TODO: Easyception should offer Now() ctors
+			Throw<InvalidOperationException>.If.IsTrue(message == null)?.Now();
 
-			networkReciever.OnNetworkMessageReceive(new PhotonResponseMessageAdapter(payload), new PhotonMessageParametersAdapter(sendParameters));
+			networkReciever.OnNetworkMessageReceive(message, new PhotonMessageParametersAdapter(sendParameters));
 		}
 
 		protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)

@@ -1,4 +1,6 @@
 ﻿using GladNet.Common;
+using GladNet.Message;
+using GladNet.Payload;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,16 +17,16 @@ namespace GladNet.PhotonServer.Client
 		/// <summary>
 		/// Called internally when a response is recieved.
 		/// </summary>
-		/// <param name="payload"><see cref="PacketPayload"/> sent by the peer.</param>
+		/// <param name="payload"><see cref="IResponseMessage"/> sent by the peer.</param>
 		/// <param name="parameters">Parameters the message was sent with.</param>
-		void OnReceiveResponse(PacketPayload payload);
+		void OnReceiveResponse(IResponseMessage message, IMessageParameters parameters);
 
 		/// <summary>
 		/// Called internally when an event is recieved.
 		/// </summary>
-		/// <param name="payload"><see cref="PacketPayload"/> sent by the peer.</param>
+		/// <param name="message"><see cref="IEventMessage"/> sent by the peer.</param>
 		/// <param name="parameters">Parameters the message was sent with.</param>
-		void OnReceiveEvent(PacketPayload payload);
+		void OnReceiveEvent(IEventMessage message, IMessageParameters parameters);
 
 		void OnStatusChanged(NetStatus status);
 	}

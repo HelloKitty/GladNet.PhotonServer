@@ -1,4 +1,7 @@
 ﻿using GladNet.Common;
+using GladNet.Engine.Common;
+using GladNet.Message;
+using GladNet.Payload;
 using GladNet.Serializer;
 using Photon.SocketServer;
 using System;
@@ -10,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace GladNet.PhotonServer.Server
 {
-	public class PhotonServerINetworkMessageSenderClientAdapter : INetworkMessageSender
+	public class PhotonServerINetworkMessageSenderClientAdapter : INetworkMessageRouterService
 	{
 		private PeerBase photonPeer { get; }
 
@@ -100,6 +103,21 @@ namespace GladNet.PhotonServer.Server
 			where TPacketType : PacketPayload, IStaticPayloadParameters
 		{
 			return TrySendMessage(opType, payload, payload.DeliveryMethod, payload.Encrypted, payload.Channel);
+		}
+
+		public GladNet.Common.SendResult TryRouteMessage(IResponseMessage message, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
+		{
+			throw new NotImplementedException();
+		}
+
+		public GladNet.Common.SendResult TryRouteMessage(IRequestMessage message, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
+		{
+			throw new NotImplementedException();
+		}
+
+		public GladNet.Common.SendResult TryRouteMessage<TMessageType>(TMessageType message, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0) where TMessageType : INetworkMessage, IRoutableMessage, IOperationTypeMappable
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
