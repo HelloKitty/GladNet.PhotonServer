@@ -28,6 +28,10 @@ namespace GladNet.PhotonServer.Client
 		/// <param name="parameters">Parameters the message was sent with.</param>
 		void OnReceiveEvent(IEventMessage message, IMessageParameters parameters);
 
+		/// <summary>
+		/// Called internaly when a status changed is recieved.
+		/// </summary>
+		/// <param name="status">New <see cref="NetStatus"/> that has been dispatched.</param>
 		void OnStatusChanged(NetStatus status);
 	}
 }
