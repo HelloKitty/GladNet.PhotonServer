@@ -163,17 +163,47 @@ namespace GladNet.PhotonServer.Server
 
 		public GladNet.Common.SendResult TryRouteMessage(IResponseMessage message, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
 		{
-			throw new NotImplementedException();
+			//WARNING: Make sure to send encrypted parameter. There was a fault where we didn't. We cannot unit test it as it's within a MonoBehaviour
+			switch(this.photonPeer.SendOperationResponse(new OperationResponse(1, new Dictionary<byte, object>() { { 1, message.SerializeWithVisitor(this.serializerStrategy) } }),
+				new SendParameters() { Unreliable = !deliveryMethod.isReliable(), ChannelId = channel, Encrypted = encrypt }))
+			{
+				case Photon.SocketServer.SendResult.Disconnected:
+					return GladNet.Common.SendResult.FailedNotConnected;
+
+				default:
+				case Photon.SocketServer.SendResult.SendBufferFull:
+				case Photon.SocketServer.SendResult.MessageToBig:
+				case Photon.SocketServer.SendResult.InvalidContentType:
+				case Photon.SocketServer.SendResult.EncryptionNotSupported:
+				case Photon.SocketServer.SendResult.InvalidChannel:
+				case Photon.SocketServer.SendResult.Failed:
+					return GladNet.Common.SendResult.Invalid;
+
+				case Photon.SocketServer.SendResult.Ok:
+					return GladNet.Common.SendResult.Queued;
+			}
 		}
 
 		public GladNet.Common.SendResult TryRouteMessage(IRequestMessage message, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
 		{
-			throw new NotImplementedException();
+			//We cannot route requests in this sender service.
+			//TODO: Log something.
+			return GladNet.Common.SendResult.Invalid;
 		}
 
 		public GladNet.Common.SendResult TryRouteMessage<TMessageType>(TMessageType message, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0) where TMessageType : INetworkMessage, IRoutableMessage, IOperationTypeMappable
 		{
-			throw new NotImplementedException();
+			switch (message.OperationTypeMappedValue)
+			{
+				default:
+				case OperationType.Request:
+				case OperationType.Event:
+					return GladNet.Common.SendResult.Invalid;
+
+				//We can only route responses
+				case OperationType.Response:
+					return this.TryRouteMessage(message as IResponseMessage, deliveryMethod, encrypt, channel);
+			}
 		}
 	}
 }
