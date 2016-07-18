@@ -13,11 +13,8 @@ using GladNet.Engine.Server;
 
 namespace GladNet.PhotonServer.Server
 {
-	/// <summary>
-	/// GladNet2 ApplicationBase for Photon applications.
-	/// </summary>
 	public abstract class GladNetAppBase : ApplicationBase
-	{	
+	{ 
 		/// <summary>
 		/// Application logger. Root logger for the <see cref="ApplicationBase"/>.
 		/// </summary>
@@ -26,12 +23,19 @@ namespace GladNet.PhotonServer.Server
 		/// <summary>
 		/// Provider for <see cref="ISerializerStrategy"/>s.
 		/// </summary>
-		public abstract ISerializerStrategy Serializer { get; protected set; }
+		public virtual ISerializerStrategy Serializer { get; }
 
 		/// <summary>
 		/// Provider for <see cref="IDeserializerStrategy"/>s.
 		/// </summary>
-		public abstract IDeserializerStrategy Deserializer { get; protected set; }
+		public virtual IDeserializerStrategy Deserializer { get; }
+
+		//prevents inherting from this class: http://stackoverflow.com/questions/1244953/internal-abstract-class-how-to-hide-usage-outside-assembly
+		internal GladNetAppBase()
+			: base()
+		{
+
+		}
 
 		/// <summary>
 		/// Called internally by Photon when a peer is attempting to connect.
@@ -64,7 +68,7 @@ namespace GladNet.PhotonServer.Server
 
 					return null;
 				}
-				
+
 				//This must be done to keep alive the reference of the session
 				//Otherwise GC will clean it up (WARNING: This will create circular reference and cause a leak if you do not null the peer out eventually)
 				peerBase.GladNetPeer = session;
@@ -128,5 +132,25 @@ namespace GladNet.PhotonServer.Server
 		/// Called internally by Photon when the application is about to be torn down.
 		/// </summary>
 		protected override abstract void TearDown();
+	}
+
+	/// <summary>
+	/// GladNet2 ApplicationBase for Photon applications.
+	/// </summary>
+	/// <typeparam name="TSerializationStrategy">Concrete serialization strategy.</typeparam>
+	/// <typeparam name="TDeserializationStrategy">Concrete deserialization strategy.</typeparam>
+	/// <typeparam name="TSerializerRegistry">Concrete serializer registry.</typeparam>
+	public abstract class GladNetAppBase<TSerializationStrategy, TDeserializationStrategy, TSerializerRegistry> : GladNetAppBase
+		where TSerializationStrategy : ISerializerStrategy, new() where TDeserializationStrategy : IDeserializerStrategy, new() where TSerializerRegistry : ISerializerRegistry, new()
+	{	
+		/// <summary>
+		/// Provider for <see cref="ISerializerStrategy"/>s.
+		/// </summary>
+		public override ISerializerStrategy Serializer { get; } = new TSerializationStrategy(); //this instantiation is slow but we only do it once.
+
+		/// <summary>
+		/// Provider for <see cref="IDeserializerStrategy"/>s.
+		/// </summary>
+		public override IDeserializerStrategy Deserializer { get; } = new TDeserializationStrategy();  //this instantiation is slow but we only do it once.
 	}
 }
