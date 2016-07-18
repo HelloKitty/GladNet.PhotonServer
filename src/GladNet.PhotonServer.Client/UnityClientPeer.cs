@@ -103,7 +103,7 @@ namespace GladNet.PhotonServer.Client
 			bool isConnecting = peer.Connect(serverAddress, appName);
 
 			//We can't really give accurate data. Photon doesn't expose it.
-			PeerDetails = new PhotonServerIConnectionDetailsAdapter(serverAddress.Split(':').First(), Int32.Parse(serverAddress.Split(':').Last()), -1, 0);
+			PeerDetails = new PhotonServerIConnectionDetailsAdapter(serverAddress.Split(':').First(), Int32.Parse(serverAddress.Split(':').Last()), -1);
 			NetworkSendService = new UnityClientPeerNetworkMessageSenderAdapter<UnityClientPeer<TSerializationStrategy, TDeserializationStrategy, TSerializerRegistry>>(this);
 
 			if (!isConnecting)

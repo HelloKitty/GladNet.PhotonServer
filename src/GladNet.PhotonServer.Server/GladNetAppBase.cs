@@ -43,7 +43,7 @@ namespace GladNet.PhotonServer.Server
 		{
 			//Create the details so that the consumer of this class, who extends it, can indicate if this is a request we should service
 			//AKA should a peer be made
-			IConnectionDetails details = new PhotonServerIConnectionDetailsAdapter(initRequest.RemoteIP, initRequest.RemotePort, initRequest.LocalPort, initRequest.ConnectionId);
+			IConnectionDetails details = new PhotonServerIConnectionDetailsAdapter(initRequest.RemoteIP, initRequest.RemotePort, initRequest.LocalPort);
 
 			//If we should service the peer
 			if (ShouldServiceIncomingPeerConnect(details))
