@@ -257,10 +257,15 @@ namespace GladNet.PhotonServer.Client
 		[SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		public SendResult SendRequest(PacketPayload payload, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
 		{
-			byte[] payloadBytes = serializer.Serialize(payload);
+			//We send messages now and not payloads
+			RequestMessage message = new RequestMessage(payload);
+
+			//Serialize the internal payload
+			//We need to do this manually
+			message.Payload.Serialize(serializer);
 
 			//WARNING: Make sure to send encrypted parameter. There was a fault where we didn't. We cannot unit test it as it's within a MonoBehaviour
-			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, payloadBytes } }, deliveryMethod.isReliable(), channel, encrypt) ? SendResult.Sent : SendResult.Invalid;
+			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, serializer.Serialize(message) } }, deliveryMethod.isReliable(), channel, encrypt) ? SendResult.Sent : SendResult.Invalid;
 		}
 
 		/// <summary>
@@ -273,10 +278,15 @@ namespace GladNet.PhotonServer.Client
 		public SendResult SendRequest<TPacketType>(TPacketType payload)
 			where TPacketType : PacketPayload, IStaticPayloadParameters
 		{
-			byte[] payloadBytes = serializer.Serialize(payload);
+			//We send messages now and not payloads
+			RequestMessage message = new RequestMessage(payload);
+
+			//Serialize the internal payload
+			//We need to do this manually
+			message.Payload.Serialize(serializer);
 
 			//WARNING: Make sure to send encrypted parameter. There was a fault where we didn't. We cannot unit test it as it's within a MonoBehaviour
-			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, payloadBytes } }, payload.DeliveryMethod.isReliable(), payload.Channel, payload.Encrypted) ? SendResult.Sent : SendResult.Invalid;
+			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, serializer.Serialize(message) } }, payload.DeliveryMethod.isReliable(), payload.Channel, payload.Encrypted) ? SendResult.Sent : SendResult.Invalid;
 		}
 
 		/// <summary>
@@ -317,7 +327,8 @@ namespace GladNet.PhotonServer.Client
 
 		public SendResult RouteRequest(IRequestMessage message, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
 		{
-			throw new NotImplementedException();
+			//WARNING: Make sure to send encrypted parameter. There was a fault where we didn't. We cannot unit test it as it's within a MonoBehaviour
+			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, message.SerializeWithVisitor(serializer) } }, deliveryMethod.isReliable(), channel, encrypt) ? SendResult.Sent : SendResult.Invalid;
 		}
 	}
 }
