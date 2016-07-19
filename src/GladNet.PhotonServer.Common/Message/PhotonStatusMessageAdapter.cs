@@ -33,6 +33,7 @@ namespace GladNet.PhotonServer.Common
 			Status = status;
 		}
 
+		//This shouldn't be called
 		public byte[] SerializeWithVisitor(ISerializerStrategy serializer)
 		{
 			throw new NotImplementedException($"{nameof(PhotonStatusMessageAdapter)} doesn't need to serialize the fake status message.");

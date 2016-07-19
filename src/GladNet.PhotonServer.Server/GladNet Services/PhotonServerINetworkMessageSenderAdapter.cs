@@ -17,6 +17,7 @@ namespace GladNet.PhotonServer.Server
 	/// <summary>
 	/// Adapter for the <see cref="INetworkMessageRouterService"/> interface.
 	/// </summary>
+	//TODO: RENAME CLASS
 	public class PhotonServerINetworkMessageSenderClientAdapter : INetworkMessageRouterService
 	{
 		/// <summary>
