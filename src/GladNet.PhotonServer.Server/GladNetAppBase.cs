@@ -10,6 +10,7 @@ using GladNet.Serializer;
 using Photon.SocketServer.ServerToServer;
 using GladNet.Engine.Common;
 using GladNet.Engine.Server;
+using GladNet.Message;
 
 namespace GladNet.PhotonServer.Server
 {
@@ -29,6 +30,8 @@ namespace GladNet.PhotonServer.Server
 		/// Provider for <see cref="IDeserializerStrategy"/>s.
 		/// </summary>
 		public virtual IDeserializerStrategy Deserializer { get; }
+
+		public virtual ISerializerRegistry SerializerRegistry { get; }
 
 		//prevents inherting from this class: http://stackoverflow.com/questions/1244953/internal-abstract-class-how-to-hide-usage-outside-assembly
 		internal GladNetAppBase()
@@ -123,10 +126,28 @@ namespace GladNet.PhotonServer.Server
 		public abstract GladNet.Engine.Common.ClientPeer CreateServerPeer(INetworkMessageRouterService sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
 			IDisconnectionServiceHandler disconnectHandler);
 
+		protected abstract void SetupSerializationRegistration(ISerializerRegistry serializationRegistry);
+
 		/// <summary>
 		/// Called internally by Photon when the application is just about to finish startup.
 		/// </summary>
-		protected override abstract void Setup();
+		protected sealed override void Setup()
+		{
+			//We utilize the internal Photon Setup() method
+			//as a vector to provide various services to the consumer of this abstract class
+			//Ways to register payload types and provide access to other internal services.
+			//Not great design but it's better than exposing them as properties and relying on consumers
+			//to deal with them there.
+
+			//We also should handle registering network message types
+			SerializerRegistry.Register(typeof(NetworkMessage));
+			SerializerRegistry.Register(typeof(RequestMessage));
+			SerializerRegistry.Register(typeof(ResponseMessage));
+			SerializerRegistry.Register(typeof(EventMessage));
+			SerializerRegistry.Register(typeof(StatusMessage));
+
+			SetupSerializationRegistration(SerializerRegistry);
+		}
 
 		/// <summary>
 		/// Called internally by Photon when the application is about to be torn down.
@@ -152,5 +173,7 @@ namespace GladNet.PhotonServer.Server
 		/// Provider for <see cref="IDeserializerStrategy"/>s.
 		/// </summary>
 		public override IDeserializerStrategy Deserializer { get; } = new TDeserializationStrategy();  //this instantiation is slow but we only do it once.
+
+		public override ISerializerRegistry SerializerRegistry { get; } = new TSerializerRegistry();
 	}
 }
