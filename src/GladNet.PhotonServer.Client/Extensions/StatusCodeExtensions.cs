@@ -7,8 +7,17 @@ using System.Text;
 
 namespace GladNet.PhotonServer.Client
 {
+	/// <summary>
+	/// Extension methods for the <see cref="StatusCode"/> enum.
+	/// </summary>
 	public static class StatusCodeExtensions
 	{
+		/// <summary>
+		/// Converts a <see cref="StatusCode"/> to <see cref="NetStatus"/> if
+		/// it can be mapped.
+		/// </summary>
+		/// <param name="status">The status to convert.</param>
+		/// <returns>The corresponding <see cref="NetStatus"/> if it exists. Null if it doesn't.</returns>
 		public static NetStatus? ToGladNet(this StatusCode status)
 		{
 			switch (status)

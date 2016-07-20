@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using GladNet.Engine.Common;
+using System.Threading;
 
 namespace GladNet.PhotonServer.Server
 {
@@ -13,6 +14,12 @@ namespace GladNet.PhotonServer.Server
 	/// </summary>
 	public class PhotonServerIConnectionDetailsAdapter : IConnectionDetails
 	{
+		//We need AUIDs because of GladNet2 routing specification: https://github.com/HelloKitty/GladNet2.Specifications/blob/master/Routing/RoutingSpecification.md
+		/// <summary>
+		/// Represents static AUID counter value for connections.
+		/// </summary>
+		private static int internalAUIDCounter = 0;
+
 		/// <summary>
 		/// IPAddress of the remote peer.
 		/// </summary>
@@ -40,12 +47,16 @@ namespace GladNet.PhotonServer.Server
 		/// <param name="remotePort">Remote port of the connection.</param>
 		/// <param name="localPort">Local port of the connection.</param>
 		/// <param name="connectionID">Unique (port-wise) ID of the connection.</param>
-		public PhotonServerIConnectionDetailsAdapter(string remoteIP, int remotePort, int localPort, int connectionID)
+		public PhotonServerIConnectionDetailsAdapter(string remoteIP, int remotePort, int localPort)
 		{
 			RemoteIP = IPAddress.Parse(remoteIP);
 			RemotePort = remotePort;
 			LocalPort = localPort;
-			ConnectionID = connectionID;
+
+			//We need to manually control AUID assingment in Photon because PhotonServer creates UIDs for connections
+			//unique PER PORT when we need PER APPLICATION.
+			//We need AUIDs because of GladNet2 routing specification: https://github.com/HelloKitty/GladNet2.Specifications/blob/master/Routing/RoutingSpecification.md
+			ConnectionID = Interlocked.Increment(ref internalAUIDCounter);
 		}
 	}
 }

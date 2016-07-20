@@ -10,14 +10,12 @@ using GladNet.Serializer;
 using Photon.SocketServer.ServerToServer;
 using GladNet.Engine.Common;
 using GladNet.Engine.Server;
+using GladNet.Message;
 
 namespace GladNet.PhotonServer.Server
 {
-	/// <summary>
-	/// GladNet2 ApplicationBase for Photon applications.
-	/// </summary>
 	public abstract class GladNetAppBase : ApplicationBase
-	{	
+	{ 
 		/// <summary>
 		/// Application logger. Root logger for the <see cref="ApplicationBase"/>.
 		/// </summary>
@@ -26,12 +24,21 @@ namespace GladNet.PhotonServer.Server
 		/// <summary>
 		/// Provider for <see cref="ISerializerStrategy"/>s.
 		/// </summary>
-		public abstract ISerializerStrategy Serializer { get; protected set; }
+		public virtual ISerializerStrategy Serializer { get; }
 
 		/// <summary>
 		/// Provider for <see cref="IDeserializerStrategy"/>s.
 		/// </summary>
-		public abstract IDeserializerStrategy Deserializer { get; protected set; }
+		public virtual IDeserializerStrategy Deserializer { get; }
+
+		public virtual ISerializerRegistry SerializerRegistry { get; }
+
+		//prevents inherting from this class: http://stackoverflow.com/questions/1244953/internal-abstract-class-how-to-hide-usage-outside-assembly
+		internal GladNetAppBase()
+			: base()
+		{
+
+		}
 
 		/// <summary>
 		/// Called internally by Photon when a peer is attempting to connect.
@@ -43,7 +50,7 @@ namespace GladNet.PhotonServer.Server
 		{
 			//Create the details so that the consumer of this class, who extends it, can indicate if this is a request we should service
 			//AKA should a peer be made
-			IConnectionDetails details = new PhotonServerIConnectionDetailsAdapter(initRequest.RemoteIP, initRequest.RemotePort, initRequest.LocalPort, initRequest.ConnectionId);
+			IConnectionDetails details = new PhotonServerIConnectionDetailsAdapter(initRequest.RemoteIP, initRequest.RemotePort, initRequest.LocalPort);
 
 			//If we should service the peer
 			if (ShouldServiceIncomingPeerConnect(details))
@@ -64,7 +71,7 @@ namespace GladNet.PhotonServer.Server
 
 					return null;
 				}
-				
+
 				//This must be done to keep alive the reference of the session
 				//Otherwise GC will clean it up (WARNING: This will create circular reference and cause a leak if you do not null the peer out eventually)
 				peerBase.GladNetPeer = session;
@@ -119,14 +126,54 @@ namespace GladNet.PhotonServer.Server
 		public abstract GladNet.Engine.Common.ClientPeer CreateServerPeer(INetworkMessageRouterService sender, IConnectionDetails details, INetworkMessageSubscriptionService subService,
 			IDisconnectionServiceHandler disconnectHandler);
 
+		protected abstract void SetupSerializationRegistration(ISerializerRegistry serializationRegistry);
+
 		/// <summary>
 		/// Called internally by Photon when the application is just about to finish startup.
 		/// </summary>
-		protected override abstract void Setup();
+		protected sealed override void Setup()
+		{
+			//We utilize the internal Photon Setup() method
+			//as a vector to provide various services to the consumer of this abstract class
+			//Ways to register payload types and provide access to other internal services.
+			//Not great design but it's better than exposing them as properties and relying on consumers
+			//to deal with them there.
+
+			//We also should handle registering network message types
+			SerializerRegistry.Register(typeof(NetworkMessage));
+			SerializerRegistry.Register(typeof(RequestMessage));
+			SerializerRegistry.Register(typeof(ResponseMessage));
+			SerializerRegistry.Register(typeof(EventMessage));
+			SerializerRegistry.Register(typeof(StatusMessage));
+
+			SetupSerializationRegistration(SerializerRegistry);
+		}
 
 		/// <summary>
 		/// Called internally by Photon when the application is about to be torn down.
 		/// </summary>
 		protected override abstract void TearDown();
+	}
+
+	/// <summary>
+	/// GladNet2 ApplicationBase for Photon applications.
+	/// </summary>
+	/// <typeparam name="TSerializationStrategy">Concrete serialization strategy.</typeparam>
+	/// <typeparam name="TDeserializationStrategy">Concrete deserialization strategy.</typeparam>
+	/// <typeparam name="TSerializerRegistry">Concrete serializer registry.</typeparam>
+	public abstract class GladNetAppBase<TSerializationStrategy, TDeserializationStrategy, TSerializerRegistry> : GladNetAppBase
+		where TSerializationStrategy : ISerializerStrategy, new() where TDeserializationStrategy : IDeserializerStrategy, new() where TSerializerRegistry : ISerializerRegistry, new()
+	{	
+		/// <summary>
+		/// Provider for <see cref="ISerializerStrategy"/>s.
+		/// </summary>
+		public override ISerializerStrategy Serializer { get; } = new TSerializationStrategy(); //this instantiation is slow but we only do it once.
+
+		/// <summary>
+		/// Provider for <see cref="IDeserializerStrategy"/>s.
+		/// </summary>
+		public override IDeserializerStrategy Deserializer { get; } = new TDeserializationStrategy();  //this instantiation is slow but we only do it once.
+
+		public override ISerializerRegistry SerializerRegistry { get; } = new TSerializerRegistry();
 	}
 }

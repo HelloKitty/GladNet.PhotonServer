@@ -42,6 +42,15 @@ namespace GladNet.PhotonServer.Client
 			return opType == OperationType.Request;
 		}
 
+		/// <summary>
+		/// Attempts to send a message using the provided <see cref="PacketPayload"/>.
+		/// </summary>
+		/// <param name="opType">The outgoing <see cref="OperationType"/>.</param>
+		/// <param name="payload">The <see cref="PacketPayload"/> to send with the message.</param>
+		/// <param name="deliveryMethod">Delivery method to use for the message.</param>
+		/// <param name="encrypt">Indicates if the message should be encrypted.</param>
+		/// <param name="channel">Channel to send on.</param>
+		/// <returns>Indicates the status of the outgoing message attempt.</returns>
 		public SendResult TrySendMessage(OperationType opType, PacketPayload payload, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
 		{
 			if (opType == OperationType.Request)
@@ -50,7 +59,14 @@ namespace GladNet.PhotonServer.Client
 				throw new ArgumentException($"Cannot send OperationType: {opType} from client peers.", nameof(opType));
 		}
 
-		public SendResult TrySendMessage<TPacketType>(OperationType opType, TPacketType payload) where TPacketType : PacketPayload, IStaticPayloadParameters
+		/// <summary>
+		/// Attempts to send a message using the provided <see cref="PacketPayload"/>.
+		/// </summary>
+		/// <param name="opType">The outgoing <see cref="OperationType"/>.</param>
+		/// <param name="payload">The <see cref="PacketPayload"/> to send with the message.</param>
+		/// <returns>Indicates the status of the outgoing message attempt.</returns>
+		public SendResult TrySendMessage<TPacketType>(OperationType opType, TPacketType payload) 
+			where TPacketType : PacketPayload, IStaticPayloadParameters
 		{
 			if (opType == OperationType.Request)
 				return messageSendingService.SendRequest(payload);

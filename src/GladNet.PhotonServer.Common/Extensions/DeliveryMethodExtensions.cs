@@ -7,6 +7,9 @@ using System.Text;
 //Use the GladNet.Common namespace for thie extension to work anywhere without reference
 namespace GladNet.Common
 {
+	/// <summary>
+	/// Extension methods for the <see cref="DeliveryMethod"/> enum.
+	/// </summary>
 	public static class DeliveryMethodExtensions
 	{
 		/// <summary>

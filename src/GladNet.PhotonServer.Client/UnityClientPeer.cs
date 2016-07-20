@@ -17,7 +17,7 @@ namespace GladNet.PhotonServer.Client
 {
 	//TODO: Stop leaking PhotonServer IPhotonPeerListener interface to consumers of this library.
 	/// <summary>
-	/// 
+	/// Unity3D Component that acts as a network peer.
 	/// </summary>
 	/// <typeparam name="TSerializationStrategy"></typeparam>
 	/// <typeparam name="TDeserializationStrategy"></typeparam>
@@ -70,6 +70,12 @@ namespace GladNet.PhotonServer.Client
 		/// </summary>
 		public INetworkMessageRouterService NetworkSendService { get; private set; }
 
+		/// <summary>
+		/// Provides textual descriptions for various error conditions and noteworthy situations. In cases where the application needs to react, a call to OnStatusChanged is used. 
+		/// OnStatusChanged gives "feedback" to the game, DebugReturn provies human readable messages on the background.
+		/// </summary>
+		/// <param name="level">DebugLevel (severity) of the message.</param>
+		/// <param name="message">Debug text. Print to System.Console or screen.</param>
 		void IPhotonPeerListener.DebugReturn(DebugLevel level, string message)
 		{
 			//Do nothing
@@ -97,7 +103,7 @@ namespace GladNet.PhotonServer.Client
 			bool isConnecting = peer.Connect(serverAddress, appName);
 
 			//We can't really give accurate data. Photon doesn't expose it.
-			PeerDetails = new PhotonServerIConnectionDetailsAdapter(serverAddress.Split(':').First(), Int32.Parse(serverAddress.Split(':').Last()), -1, 0);
+			PeerDetails = new PhotonServerIConnectionDetailsAdapter(serverAddress.Split(':').First(), Int32.Parse(serverAddress.Split(':').Last()), -1);
 			NetworkSendService = new UnityClientPeerNetworkMessageSenderAdapter<UnityClientPeer<TSerializationStrategy, TDeserializationStrategy, TSerializerRegistry>>(this);
 
 			if (!isConnecting)
@@ -107,7 +113,7 @@ namespace GladNet.PhotonServer.Client
 			//Also, this will prevent multiple poll routines.
 			if(!isPollRunning)
 				//Start the polling process
-				StartCoroutine(Poll());
+				StartCoroutine(BeginPoll());
 
 			return true;
 		}
@@ -121,9 +127,22 @@ namespace GladNet.PhotonServer.Client
 			peer.EstablishEncryption();
 		}
 
+		/// <summary>
+		/// Indicates if the polling system is still running
+		/// </summary>
 		private bool isPollRunning = false;
+
+		/// <summary>
+		/// A cached <see cref="WaitForSeconds"/> to be yielded on for the coroutine.
+		/// </summary>
 		private readonly WaitForSeconds waitTime = new WaitForSeconds(0.1f); //TODO: Expose this to the user.
-		private IEnumerator Poll()
+
+		/// <summary>
+		/// Begins the internal polling mechanism by attaching a Unity3D coroutine to this
+		/// <see cref="MonoBehaviour"/>.
+		/// </summary>
+		/// <returns>The coroutine.</returns>
+		private IEnumerator BeginPoll()
 		{
 			isPollRunning = true;
 			while (peer != null)
@@ -190,6 +209,14 @@ namespace GladNet.PhotonServer.Client
 			}
 		}
 
+		//We cannot make these generic because PhotonServer failed to create interfaces
+		//for the incoming message data.
+
+		/// <summary>
+		/// Strips the <see cref="EventMessage"/> from the <see cref="EventData"/>.
+		/// </summary>
+		/// <param name="data">Incoming <see cref="EventData"/>.</param>
+		/// <returns>The <see cref="EventMessage"/> from the data or null.</returns>
 		private EventMessage StripMessage(EventData data)
 		{
 			//Try to get the only parameter
@@ -202,6 +229,11 @@ namespace GladNet.PhotonServer.Client
 			return deserializer.Deserialize<EventMessage>(objectPair.Value as byte[]);
 		}
 
+		/// <summary>
+		/// Strips the <see cref="ResponseMessage"/> from the <see cref="OperationResponse"/>.
+		/// </summary>
+		/// <param name="data">Incoming <see cref="OperationResponse"/>.</param>
+		/// <returns>The <see cref="ResponseMessage"/> from the data or null.</returns>
 		private ResponseMessage StripMessage(OperationResponse data)
 		{
 			//Try to get the only parameter
@@ -225,10 +257,15 @@ namespace GladNet.PhotonServer.Client
 		[SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		public SendResult SendRequest(PacketPayload payload, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
 		{
-			byte[] payloadBytes = serializer.Serialize(payload);
+			//We send messages now and not payloads
+			RequestMessage message = new RequestMessage(payload);
+
+			//Serialize the internal payload
+			//We need to do this manually
+			message.Payload.Serialize(serializer);
 
 			//WARNING: Make sure to send encrypted parameter. There was a fault where we didn't. We cannot unit test it as it's within a MonoBehaviour
-			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, payloadBytes } }, deliveryMethod.isReliable(), channel, encrypt) ? SendResult.Sent : SendResult.Invalid;
+			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, serializer.Serialize(message) } }, deliveryMethod.isReliable(), channel, encrypt) ? SendResult.Sent : SendResult.Invalid;
 		}
 
 		/// <summary>
@@ -241,12 +278,21 @@ namespace GladNet.PhotonServer.Client
 		public SendResult SendRequest<TPacketType>(TPacketType payload)
 			where TPacketType : PacketPayload, IStaticPayloadParameters
 		{
-			byte[] payloadBytes = serializer.Serialize(payload);
+			//We send messages now and not payloads
+			RequestMessage message = new RequestMessage(payload);
+
+			//Serialize the internal payload
+			//We need to do this manually
+			message.Payload.Serialize(serializer);
 
 			//WARNING: Make sure to send encrypted parameter. There was a fault where we didn't. We cannot unit test it as it's within a MonoBehaviour
-			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, payloadBytes } }, payload.DeliveryMethod.isReliable(), payload.Channel, payload.Encrypted) ? SendResult.Sent : SendResult.Invalid;
+			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, serializer.Serialize(message) } }, payload.DeliveryMethod.isReliable(), payload.Channel, payload.Encrypted) ? SendResult.Sent : SendResult.Invalid;
 		}
 
+		/// <summary>
+		/// Called internally by Unity3D when the application is terminating.
+		/// Overriders MUST call base.
+		/// </summary>
 		protected virtual void OnApplicationQuit()
 		{
 			if (peer != null)
@@ -281,7 +327,8 @@ namespace GladNet.PhotonServer.Client
 
 		public SendResult RouteRequest(IRequestMessage message, DeliveryMethod deliveryMethod, bool encrypt = false, byte channel = 0)
 		{
-			throw new NotImplementedException();
+			//WARNING: Make sure to send encrypted parameter. There was a fault where we didn't. We cannot unit test it as it's within a MonoBehaviour
+			return peer.OpCustom(1, new Dictionary<byte, object>() { { 1, message.SerializeWithVisitor(serializer) } }, deliveryMethod.isReliable(), channel, encrypt) ? SendResult.Sent : SendResult.Invalid;
 		}
 	}
 }

@@ -77,7 +77,7 @@ namespace GladNet.PhotonServer.Server
 		protected override void OnConnectionEstablished(object responseObject)
 		{
 			//We connected so we should publish that fact
-			IConnectionDetails details = new PhotonServerIConnectionDetailsAdapter(this.RemoteIP, this.RemotePort, this.LocalPort, this.ConnectionId);
+			IConnectionDetails details = new PhotonServerIConnectionDetailsAdapter(this.RemoteIP, this.RemotePort, this.LocalPort);
 
 			//This is a horrible way to do it but I did not expect this sort of change in Photon 4.
 			GladNetPeer = ((GladNetAppBase)GladNetAppBase.Instance).CreateServerPeer(new PhotonServerINetworkMessageSenderClientAdapter(this, ((GladNetAppBase)GladNetAppBase.Instance).Serializer),

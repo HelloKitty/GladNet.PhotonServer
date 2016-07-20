@@ -13,6 +13,7 @@ using GladNet.Payload;
 using GladNet.Message;
 using GladNet.Engine.Common;
 using Easyception;
+using Photon.SocketServer.Rpc.Protocols;
 
 namespace GladNet.PhotonServer.Server
 {
@@ -89,11 +90,6 @@ namespace GladNet.PhotonServer.Server
 			Throw<InvalidOperationException>.If.IsTrue(message == null)?.Now();
 
 			networkReciever.OnNetworkMessageReceive(message, new PhotonMessageParametersAdapter(sendParameters)); 
-		}
-
-		protected override Photon.SocketServer.SendResult SendData(byte[] data, SendParameters sendParameters)
-		{
-			return base.SendData(data, sendParameters);
 		}
 	}
 }
