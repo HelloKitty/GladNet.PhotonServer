@@ -81,7 +81,7 @@ namespace GladNet.PhotonServer.Server
 
 			//This is a horrible way to do it but I did not expect this sort of change in Photon 4.
 			GladNetPeer = ((GladNetAppBase)GladNetAppBase.Instance).CreateServerPeer(new PhotonServerINetworkMessageSenderClientAdapter(this, ((GladNetAppBase)GladNetAppBase.Instance).Serializer),
-				details, (INetworkMessageSubscriptionService)networkReciever, disconnectionServiceHandler);
+				details, (INetworkMessageSubscriptionService)networkReciever, disconnectionServiceHandler, ((GladNetAppBase)GladNetAppBase.Instance).routebackService);
 
 			//If we failed to generate a peer
 			if(GladNetPeer == null)
@@ -89,6 +89,10 @@ namespace GladNet.PhotonServer.Server
 				this.Disconnect();
 				return;
 			}
+
+			//Add the ID to the AUID map service and setup removal
+			((GladNetAppBase)GladNetAppBase.Instance).auidMapService.Add(details.ConnectionID, GladNetPeer);
+			disconnectionServiceHandler.DisconnectionEventHandler += () => ((GladNetAppBase)GladNetAppBase.Instance).auidMapService.Remove(details.ConnectionID);
 
 			networkReciever.OnNetworkMessageReceive(new PhotonStatusMessageAdapter(NetStatus.Connected), null);
 		}
