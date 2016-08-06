@@ -19,7 +19,7 @@ namespace GladNet.PhotonServer.Server
 		/// <summary>
 		/// Application logger. Root logger for the <see cref="ApplicationBase"/>.
 		/// </summary>
-		protected abstract ILog AppLogger { get; set; }
+		protected ILog AppLogger { get; private set; }
 
 		/// <summary>
 		/// Provider for <see cref="ISerializerStrategy"/>s.
