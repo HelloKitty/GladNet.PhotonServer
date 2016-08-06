@@ -43,6 +43,9 @@ namespace GladNet.PhotonServer.Server
 		internal GladNetAppBase()
 			: base()
 		{
+			//sets up logging
+			AppLogger = SetupLogging(); //needed for the services below
+
 			//These new services are required for the GladNet2 2.x routeback feature
 			auidMapService = new AUIDServiceCollection<INetPeer>(100);
 			routebackService = new DefaultNetworkMessageRouteBackService(auidMapService, AppLogger);
@@ -160,6 +163,8 @@ namespace GladNet.PhotonServer.Server
 			ServerSetup();
 			SetupSerializationRegistration(SerializerRegistry);
 		}
+
+		protected abstract ILog SetupLogging();
 
 		protected abstract void ServerSetup();
 
