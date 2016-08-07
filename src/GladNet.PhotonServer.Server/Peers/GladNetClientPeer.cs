@@ -79,7 +79,7 @@ namespace GladNet.PhotonServer.Server
 		{
 			//Try to get the only parameter
 			//Should be the RequestMessage
-			KeyValuePair<byte, object> objectPair = operationRequest.Parameters.FirstOrDefault();
+			KeyValuePair<byte, object> objectPair = operationRequest.Parameters.FirstOrDefault(); //TODO: Handle this more efficiently
 
 			//TODO: Easyception should offer Now() ctors
 			Throw<InvalidOperationException>.If.IsTrue(objectPair.Value == null)?.Now();
@@ -88,6 +88,9 @@ namespace GladNet.PhotonServer.Server
 
 			//TODO: Easyception should offer Now() ctors
 			Throw<InvalidOperationException>.If.IsTrue(message == null)?.Now();
+
+			//TODO: Handle decryption
+			message.Payload.Deserialize(deserializer);
 
 			networkReciever.OnNetworkMessageReceive(message, new PhotonMessageParametersAdapter(sendParameters)); 
 		}

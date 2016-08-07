@@ -116,6 +116,9 @@ namespace GladNet.PhotonServer.Server
 			//TODO: Easyception should offer Now() ctors
 			Throw<InvalidOperationException>.If.IsTrue(message == null)?.Now();
 
+			//TODO: Handle decryption
+			message.Payload.Deserialize(deserializer);
+
 			networkReciever.OnNetworkMessageReceive(message, new PhotonMessageParametersAdapter(sendParameters));
 		}
 
@@ -132,6 +135,9 @@ namespace GladNet.PhotonServer.Server
 
 			//TODO: Easyception should offer Now() ctors
 			Throw<InvalidOperationException>.If.IsTrue(message == null)?.Now();
+
+			//TODO: Handle decryption
+			message.Payload.Deserialize(deserializer);
 
 			networkReciever.OnNetworkMessageReceive(message, new PhotonMessageParametersAdapter(sendParameters));
 		}

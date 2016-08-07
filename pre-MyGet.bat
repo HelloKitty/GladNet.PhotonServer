@@ -1,0 +1,1 @@
+nuget update GladNet.PhotonServer.sln -noninteractive

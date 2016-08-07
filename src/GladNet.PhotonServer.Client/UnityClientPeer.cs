@@ -90,6 +90,13 @@ namespace GladNet.PhotonServer.Client
 		/// <returns></returns>
 		public bool Connect(string serverAddress, string appName)
 		{
+			//Register these so the user doesnt have to
+			this.serializerRegiter.Register(typeof(NetworkMessage));
+			this.serializerRegiter.Register(typeof(RequestMessage));
+			this.serializerRegiter.Register(typeof(StatusMessage));
+			this.serializerRegiter.Register(typeof(ResponseMessage));
+			this.serializerRegiter.Register(typeof(EventMessage));
+
 			//We need to register the payload types before we can even send
 			//anything. Otherwise we can't serialize.
 			RegisterPayloadTypes(this.serializerRegiter);
